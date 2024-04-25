@@ -1,7 +1,7 @@
 /*
- * Class represents one security of stock of the market
+ * Class represents one stock of stock market
  */
-public class Security {
+public class Stock {
     private String symbol; // represents the symbol of the stock
     private double price; // price of stock
     private String name; // name of the company

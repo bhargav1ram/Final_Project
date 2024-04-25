@@ -33,6 +33,15 @@ public class Currencies implements DatabaseObserver {
         currency.setExchangeRate(er);
     }
 
+    // gets list of all currencies
+    public List<String> getCurrencySymbols(){
+        List<String> currencySymbols = new ArrayList<>();
+        for (Currency currency : currencies) {
+            currencySymbols.add(currency.getSymbol());
+        }
+        return currencySymbols;
+    }
+
     public void getLatestFromDB() {
         // TODO: add if new currencies are added or change the ers of current currencies
     }
