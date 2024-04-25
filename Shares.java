@@ -40,6 +40,21 @@ public class Shares {
         }
     }
 
+    // get current value of shares
+    public double getUSDVal(){
+        return currentNumOfShares*stock.getPrice();
+    }
+
+    // buy in USD amounts
+    public void buySharesInUSD(double usdAmount){
+        buyShares(usdAmount/stock.getPrice());
+    }
+
+    // sell in USD amounts
+    public void sellSharesInUSD(double usdAmount){
+        sellShares(usdAmount/stock.getPrice());
+    }
+
     // getter
     public double getCurrentNumOfShares(){
         return currentNumOfShares;

@@ -20,7 +20,7 @@ public class Currencies implements DatabaseObserver {
     }
 
     // gets currency with a symbol
-    private Currency getCurrency(String symbol){
+    public Currency getCurrency(String symbol){
         for (Currency currency : currencies) {
             if (currency.getSymbol().equals(symbol)) {
                 return currency;
