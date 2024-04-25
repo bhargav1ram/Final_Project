@@ -7,9 +7,11 @@ import java.util.List;
 
 public class Currencies implements DatabaseObserver {
     private List<Currency> currencies; // list of all currencies
+    public static final Currencies get = new Currencies(); // singleton instance
 
-    public Currencies(){
+    private Currencies(){
         currencies = new ArrayList<Currency>();
+        // TODO: get data from database and update curriences accordingly
     }
 
     // adds new currency to list

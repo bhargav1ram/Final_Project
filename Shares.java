@@ -13,12 +13,13 @@ public class Shares {
     private List<Double> buyNumOfShares; // number of shares bought
     private List<Double> sellNumOfShares; // number of shares sold
 
-    public Shares(Stock st){
-        stock = st;
+    public Shares(String userId, String symbol){
+        stock = Stocks.get.getStock(symbol);
         buyPrices = new ArrayList<>();
         sellPrices = new ArrayList<>();
         buyNumOfShares = new ArrayList<>();
         sellNumOfShares = new ArrayList<>();
+        // TODO: fill in shares info of this user and symbol from the database
     }
 
     // function to buy n shares
@@ -26,6 +27,7 @@ public class Shares {
         numShares += numShares;
         buyPrices.add(stock.getPrice());
         buyNumOfShares.add(numShares);
+        // TODO: push the current info to the database
     }
 
     // function to sell n shares
@@ -34,6 +36,7 @@ public class Shares {
             currentNumOfShares-=numShares;
             sellPrices.add(stock.getPrice());
             sellNumOfShares.add(numShares);
+            // TODO: push the current info to the database
         }
     }
 
@@ -89,4 +92,7 @@ public class Shares {
         }
         return num;
     }
+
+    // pushes the current shares info to the database
+
 }
