@@ -1,10 +1,10 @@
 /*
- * Class represents one security of stock of the market
+ * Class represents one current
  */
-public class Security {
+public class Currency {
     private String symbol; // represents the symbol of the stock
-    private double price; // price of stock
-    private String name; // name of the company
+    private double exchangeRate; // exchangeRate of the currency
+    private String name; // name of the currency
 
     public String getSymbol() {
         return symbol;
@@ -12,11 +12,11 @@ public class Security {
     public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
-    public double getPrice() {
-        return price;
+    public double getExchangeRate() {
+        return exchangeRate;
     }
-    public void setPrice(double price) {
-        this.price = price;
+    public void setExchangeRate(double er) {
+        this.exchangeRate = er;
     }
     public String getName() {
         return name;

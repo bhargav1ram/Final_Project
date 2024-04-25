@@ -1,5 +1,5 @@
 /*
- * class to maintain all securites
+ * class to maintain all securites. has database functionality
  */
 
 import java.util.ArrayList;
