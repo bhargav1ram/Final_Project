@@ -8,8 +8,12 @@ public class Cash {
     private Currency currency; // the type of currency
 
     public Cash(String symbol, double am){
-        currency = Currencies.get.getCurrency(symbol);
+        currency = Currencies.instance.getCurrency(symbol);
         amount = am;
+    }
+
+    public Currency getCurrency(){
+        return currency;
     }
 
     public double getUSDVal(){

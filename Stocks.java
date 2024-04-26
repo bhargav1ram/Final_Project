@@ -6,9 +6,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Stocks implements DatabaseObserver {
+public class Stocks implements AdminObserver {
     private List<Stock> stocks; // list of all stocks
-    public static final Stocks get = new Stocks(); // singleton instance
+    public static final Stocks instance = new Stocks(); // singleton instance
 
     private Stocks(){
         stocks = new ArrayList<Stock>();
@@ -45,7 +45,7 @@ public class Stocks implements DatabaseObserver {
         return stockSymbols;
     }
 
-    public void getLatestFromDB() {
+    public void getUpdateFromAdmin() {
         // TODO: add if new stocks are added or change the prices of current stocks
     }
     

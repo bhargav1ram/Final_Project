@@ -5,9 +5,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Currencies implements DatabaseObserver {
+public class Currencies implements AdminObserver {
     private List<Currency> currencies; // list of all currencies
-    public static final Currencies get = new Currencies(); // singleton instance
+    public static final Currencies instance = new Currencies(); // singleton instance
 
     private Currencies(){
         currencies = new ArrayList<Currency>();
@@ -44,8 +44,8 @@ public class Currencies implements DatabaseObserver {
         return currencySymbols;
     }
 
-    public void getLatestFromDB() {
-        // TODO: add if new currencies are added or change the ers of current currencies
+    public void getUpdateFromAdmin() {
+        // TODO: add if new currencies are added or change the ERs of current currencies
     }
     
 }

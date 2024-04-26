@@ -12,13 +12,15 @@ public class Shares {
     private List<Double> sellPrices; // the sell prices
     private List<Double> buyNumOfShares; // number of shares bought
     private List<Double> sellNumOfShares; // number of shares sold
+    private List<String> trades; // times of the buys
 
     public Shares(String userId, String symbol){
-        stock = Stocks.get.getStock(symbol);
+        stock = Stocks.instance.getStock(symbol);
         buyPrices = new ArrayList<>();
         sellPrices = new ArrayList<>();
         buyNumOfShares = new ArrayList<>();
         sellNumOfShares = new ArrayList<>();
+        trades = new ArrayList<>();
         // TODO: fill in shares info of this user and symbol from the database
     }
 
@@ -27,6 +29,7 @@ public class Shares {
         numShares += numShares;
         buyPrices.add(stock.getPrice());
         buyNumOfShares.add(numShares);
+        trades.add("Bought: "+numShares+" shares, "+"Price: "+stock.getPrice()+", Time: "+Clock.instance.getTime());
         // TODO: push the current info to the database
     }
 
@@ -36,6 +39,7 @@ public class Shares {
             currentNumOfShares-=numShares;
             sellPrices.add(stock.getPrice());
             sellNumOfShares.add(numShares);
+            trades.add("Sold: "+numShares+" shares, "+"Price: "+stock.getPrice()+", Time: "+Clock.instance.getTime());
             // TODO: push the current info to the database
         }
     }
@@ -90,15 +94,6 @@ public class Shares {
         return avg/sellPrices.size();
     }
 
-    // number of shares bought till now
-    private double numSharesBought(){
-        double num = 0;
-        for (Double buynum : buyNumOfShares) {
-            num+=buynum;
-        }
-        return num;
-    }
-
     // number of shares sold till now
     private double numSharesSold(){
         double num = 0;
@@ -108,6 +103,9 @@ public class Shares {
         return num;
     }
 
-    // pushes the current shares info to the database
+    // get all trades
+    public List<String> getTrades(){
+        return trades;
+    }
 
 }
