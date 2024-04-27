@@ -8,10 +8,17 @@ import java.util.*;
 public class TradingAccount extends Account {
     private List<Shares> sharesTotal; // variable to store all the shares
 
-    public TradingAccount(String uid){
-        super(uid);
+    public TradingAccount(String uid, String accId, double openingBalance, String accType){
+        super(uid, accId, openingBalance, accType);
         sharesTotal = new ArrayList<>();
-        // TODO: get shares info from database
+        minBalance = Constants.get.minTradingsBalance;
+        // TODO: update shares info in database
+    }
+
+    public TradingAccount(String uid, String accId, String accType){
+        super(uid, accId, accType);
+        minBalance = Constants.get.minTradingsBalance;
+        // TODO: populate shares with previous shares from database
     }
 
     // maximum shares one can buy of a symbol due to balance restrictions

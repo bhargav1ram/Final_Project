@@ -3,8 +3,13 @@
  * Taking a loan, transfering funds to trading account etc
  */
 public class SavingsAccount extends LoanableAccount {
-    public SavingsAccount(String uid){
-        super(uid);
+    public SavingsAccount(String uid, String accId, double openingBalance, String accType){
+        super(uid, accId, openingBalance, accType);
+        minBalance = Constants.get.minSavingsBalance;
+    }
+
+    public SavingsAccount(String uid, String accId, String accType){
+        super(uid, accId, accType);
         minBalance = Constants.get.minSavingsBalance;
     }
 

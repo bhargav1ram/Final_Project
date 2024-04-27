@@ -10,14 +10,26 @@ public class Account {
     protected String accountId; // id of the account
     protected String accountOpenTime; // time of opening account
     protected double minBalance; // minimum USD balance for the account
+    protected String accountType; // savings or checkings or tranding
 
-    public Account(String uid){
+    public Account(String uid, String accId, double openingBalance, String accType){
         minBalance = 0.0;
         transactions = new ArrayList<>();
         balances = Arrays.asList(new Cash(Constants.get.usdSymbol, 0));
         accountOpenTime = Clock.get.getTime();
-
         userId = uid;
+        accountId = accId;
+        accountType = accType;
+        // TODO: push new account to the database
+
+        this.deposit(Constants.get.usdSymbol, openingBalance);
+    }
+
+    public Account(String uid, String accId, String accType){
+        minBalance = 0.0;
+        userId = uid;
+        accountId = accId;
+        accountType = accType;
         // TODO: get transactions and balances data from database
     }
 
@@ -109,20 +121,34 @@ public class Account {
 
     // withdraw from ATM
     public void withdraw(String symbol, double amount){
+        deductFee(symbol, amount*Constants.get.feePercent);
+        amount *= (1.0-Constants.get.feePercent);
         decreaseBalance(symbol, amount);
-        addToTransactions(new Transaction("account", "withdrawal", amount, Clock.get.getTime()));
+        addToTransactions(new Transaction("account", "withdrawal", amount*Currencies.get.getCurrency(symbol).getExchangeRate(), Clock.get.getTime()));
     }
 
     // deposit from atm
     public void deposit(String symbol, double amount){
+        if(amount == 0.0) return;
+        deductFee(symbol, amount*Constants.get.feePercent);
+        amount *= (1.0-Constants.get.feePercent);
         addBalance(symbol, amount);
-        addToTransactions(new Transaction("deposit", "account", amount, Clock.get.getTime()));
+        addToTransactions(new Transaction("deposit", "account", amount*Currencies.get.getCurrency(symbol).getExchangeRate(), Clock.get.getTime()));
     }
 
-    // convert from currency to another currency
+    // convert from currency to another currency. Convert 100 EUR to x USD
     public void convert(String fromSymbol, String toSymbol, double amount){
-        addBalance(toSymbol, amount);
+        deductFee(fromSymbol, amount*Constants.get.feePercent);
+        amount *= (1.0-Constants.get.feePercent);
         decreaseBalance(fromSymbol, amount);
-        addToTransactions(new Transaction(fromSymbol, toSymbol, amount, Clock.get.getTime()));
+        addBalance(toSymbol, amount*Currencies.get.getCurrency(toSymbol).getExchangeRate()/Currencies.get.getCurrency(fromSymbol).getExchangeRate());
+        addToTransactions(new Transaction(fromSymbol, toSymbol, amount*Currencies.get.getCurrency(fromSymbol).getExchangeRate(), Clock.get.getTime()));
+    }
+
+    // function to deduct fees
+    protected void deductFee(String symbol, double amount){
+        if (amount == 0.0) return;
+        decreaseBalance(symbol, amount);
+        addToTransactions(new Transaction("account", "fee", amount*Currencies.get.getCurrency(symbol).getExchangeRate(), Clock.get.getTime()));
     }
 }

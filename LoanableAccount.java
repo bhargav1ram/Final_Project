@@ -6,9 +6,14 @@
 import java.util.*;
 
 public class LoanableAccount extends Account implements AdminObserver {
-    public LoanableAccount(String uid){
-        super(uid);
+    public LoanableAccount(String uid, String accId, double openingBalance, String accType){
+        super(uid, accId, openingBalance, accType);
         loans = new ArrayList<>();
+        // TODO: push current loans to the database
+    }
+
+    public LoanableAccount(String uid, String accId, String accType){
+        super(uid, accId, accType);
         // TODO: populate loans with previous loans from database
     }
 
@@ -42,6 +47,8 @@ public class LoanableAccount extends Account implements AdminObserver {
 
     // pay a particular loan. 0 index is loanId
     public void payOffLoan(int loanId, double amount){
+        deductFee(Constants.get.usdSymbol, amount*Constants.get.feePercent);
+        amount *= (1.0-Constants.get.feePercent);
         Loan curLoan = loans.get(loanId);
         curLoan.decreaseAmount(amount);
         if (curLoan.getAmount()==0.0) {
