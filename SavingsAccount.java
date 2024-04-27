@@ -5,9 +5,20 @@
 public class SavingsAccount extends LoanableAccount {
     public SavingsAccount(String uid){
         super(uid);
+        minBalance = Constants.get.minSavingsBalance;
     }
 
-    
+    // doesn't automatically add tradings acount balance
+    public void withdrawIntoTrading(double amount){
+        decreaseBalance(Constants.get.usdSymbol, amount);
+        addToTransactions(new Transaction("account", "tradings account", amount, Clock.get.getTime()));
+    }
+
+    // doesn't automatically reduce tranding account balance
+    public void depositFromTrading(double amount){
+        addBalance(Constants.get.usdSymbol, amount);
+        addToTransactions(new Transaction("tradings account", "account", amount, Clock.get.getTime()));
+    }
 
     public void getUpdateFromAdmin() {
         // add interest deposits if the balance is > 3000

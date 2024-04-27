@@ -13,4 +13,5 @@ public class Constants {
 
     public final double interestRate = 0.1; // APR for the loans or interests
     public final double minimumBalanceForInterests = 3000; // savings with balance > 3000 will be paid interest
+    public final double minSavingsBalance = 2500; // minimum balance for savings account
 }

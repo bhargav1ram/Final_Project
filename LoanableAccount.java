@@ -21,7 +21,7 @@ public class LoanableAccount extends Account implements AdminObserver {
     }
 
     // get loans in string format
-    public List<String> getLoans() {
+    public List<String> getLoansDesc() {
         List<String> lns = new ArrayList<>();
         for (Loan loan : loans) {
             lns.add(loan.toString());
@@ -42,7 +42,11 @@ public class LoanableAccount extends Account implements AdminObserver {
 
     // pay a particular loan. 0 index is loanId
     public void payOffLoan(int loanId, double amount){
-        loans.get(loanId).decreaseAmount(amount);
+        Loan curLoan = loans.get(loanId);
+        curLoan.decreaseAmount(amount);
+        if (curLoan.getAmount()==0.0) {
+            loans.remove(curLoan);
+        }
         // TODO: update the database with right loans
         decreaseBalance(Constants.get.usdSymbol, amount);
         addToTransactions(new Transaction("account", "loan "+loanId, amount, Clock.get.getTime()));

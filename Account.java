@@ -9,8 +9,10 @@ public class Account {
     protected List<Cash> balances; // balances of each currency
     protected String accountId; // id of the account
     protected String accountOpenTime; // time of opening account
+    protected double minBalance; // minimum USD balance for the account
 
     public Account(String uid){
+        minBalance = 0.0;
         transactions = new ArrayList<>();
         balances = Arrays.asList(new Cash(Constants.get.usdSymbol, 0));
         accountOpenTime = Clock.get.getTime();
@@ -62,6 +64,16 @@ public class Account {
             return 0;
         }
         return cash.getAmount();
+    }
+
+    // get balance that can be withdrawn at this point
+    public double getWithdrawableBalance(String symbol){
+        double totalBalance = getBalance(symbol);
+        if (symbol == Constants.get.usdSymbol) {
+            totalBalance = totalBalance-minBalance;
+            if (totalBalance<0.0) totalBalance = 0.0;
+        }
+        return totalBalance;
     }
 
     // get balance of a currency symbol
