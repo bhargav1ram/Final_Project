@@ -15,7 +15,7 @@ public class Shares {
     private List<String> trades; // times of the buys
 
     public Shares(String userId, String symbol){
-        stock = Stocks.instance.getStock(symbol);
+        stock = Stocks.get.getStock(symbol);
         buyPrices = new ArrayList<>();
         sellPrices = new ArrayList<>();
         buyNumOfShares = new ArrayList<>();
@@ -29,7 +29,7 @@ public class Shares {
         numShares += numShares;
         buyPrices.add(stock.getPrice());
         buyNumOfShares.add(numShares);
-        trades.add("Bought: "+numShares+" shares, "+"Price: "+stock.getPrice()+", Time: "+Clock.instance.getTime());
+        trades.add("Bought: "+numShares+" shares, "+"Price: "+stock.getPrice()+", Time: "+Clock.get.getTime());
         // TODO: push the current info to the database
     }
 
@@ -39,7 +39,7 @@ public class Shares {
             currentNumOfShares-=numShares;
             sellPrices.add(stock.getPrice());
             sellNumOfShares.add(numShares);
-            trades.add("Sold: "+numShares+" shares, "+"Price: "+stock.getPrice()+", Time: "+Clock.instance.getTime());
+            trades.add("Sold: "+numShares+" shares, "+"Price: "+stock.getPrice()+", Time: "+Clock.get.getTime());
             // TODO: push the current info to the database
         }
     }
@@ -106,6 +106,14 @@ public class Shares {
     // get all trades
     public List<String> getTrades(){
         return trades;
+    }
+
+    public Stock getStock(){
+        return stock;
+    }
+
+    public String toString(){
+        return currentNumOfShares+" shares of "+stock.getName()+" ("+stock.getSymbol()+") worth $"+getUSDVal();
     }
 
 }

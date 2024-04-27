@@ -3,8 +3,7 @@
  */
 public class CheckingsAccount extends LoanableAccount {
     public CheckingsAccount(String uid){
-        userId = uid;
-        // TODO: get transactions and balances data from database
+        super(uid);
     }
 
     public void getUpdateFromAdmin() {

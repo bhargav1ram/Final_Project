@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Currencies implements AdminObserver {
     private List<Currency> currencies; // list of all currencies
-    public static final Currencies instance = new Currencies(); // singleton instance
+    public static final Currencies get = new Currencies(); // singleton instance
 
     private Currencies(){
         currencies = new ArrayList<Currency>();

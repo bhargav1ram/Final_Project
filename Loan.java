@@ -9,7 +9,7 @@ public class Loan {
 
     public Loan(double amt, String col){
         amount = amt;
-        startTime = Clock.instance.getTime();
+        startTime = Clock.get.getTime();
         defaultedPayments = 0;
         collateral = col;
     }

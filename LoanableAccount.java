@@ -6,7 +6,8 @@
 import java.util.*;
 
 public class LoanableAccount extends Account implements AdminObserver {
-    public LoanableAccount(){
+    public LoanableAccount(String uid){
+        super(uid);
         loans = new ArrayList<>();
         // TODO: populate loans with previous loans from database
     }
@@ -43,26 +44,26 @@ public class LoanableAccount extends Account implements AdminObserver {
     public void payOffLoan(int loanId, double amount){
         loans.get(loanId).decreaseAmount(amount);
         // TODO: update the database with right loans
-        decreaseBalance(Constants.instance.usdSymbol, amount);
-        addToTransactions(new Transaction("account", "loan "+loanId, amount, Clock.instance.getTime()));
+        decreaseBalance(Constants.get.usdSymbol, amount);
+        addToTransactions(new Transaction("account", "loan "+loanId, amount, Clock.get.getTime()));
     }
 
     // pay interest from balance to admin or else mark loan as defaulted
     protected void payInterestFromBalance(){
         int loanId = 0;
         for (Loan loan : loans) {
-            double years = Clock.instance.getNumOfYearsInDecimal(loan.getStartTime(), Clock.instance.getTime());
-            double interest = Constants.instance.interestRate*years*loan.getAmount();
+            double years = Clock.get.getNumOfYearsInDecimal(loan.getStartTime(), Clock.get.getTime());
+            double interest = Constants.get.interestRate*years*loan.getAmount();
 
             // decrease that amount from balance and add to defaulted payments if interest is more
-            if (getBalance(Constants.instance.usdSymbol) >= interest) {
-                decreaseBalance(Constants.instance.usdSymbol, interest);
-                addToTransactions(new Transaction("account", "interest to loan "+loanId, interest, Clock.instance.getTime()));
+            if (getBalance(Constants.get.usdSymbol) >= interest) {
+                decreaseBalance(Constants.get.usdSymbol, interest);
+                addToTransactions(new Transaction("account", "interest to loan "+loanId, interest, Clock.get.getTime()));
             }
             else{
-                double curbalance = getBalance(Constants.instance.usdSymbol);
-                decreaseBalance(Constants.instance.usdSymbol, curbalance);
-                addToTransactions(new Transaction("account", "interest to loan "+loanId, curbalance, Clock.instance.getTime()));
+                double curbalance = getBalance(Constants.get.usdSymbol);
+                decreaseBalance(Constants.get.usdSymbol, curbalance);
+                addToTransactions(new Transaction("account", "interest to loan "+loanId, curbalance, Clock.get.getTime()));
                 loan.addToDefaultedPayments(interest-curbalance);
                 // TODO: update the database with right loans
             }

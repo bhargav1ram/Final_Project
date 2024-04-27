@@ -10,10 +10,13 @@ public class Account {
     protected String accountId; // id of the account
     protected String accountOpenTime; // time of opening account
 
-    public Account(){
+    public Account(String uid){
         transactions = new ArrayList<>();
-        balances = Arrays.asList(new Cash(Constants.instance.usdSymbol, 0));
-        accountOpenTime = Clock.instance.getTime();
+        balances = Arrays.asList(new Cash(Constants.get.usdSymbol, 0));
+        accountOpenTime = Clock.get.getTime();
+
+        userId = uid;
+        // TODO: get transactions and balances data from database
     }
 
     // add cash of certain currency. ex: INR 10, EUR 300
@@ -95,19 +98,19 @@ public class Account {
     // withdraw from ATM
     public void withdraw(String symbol, double amount){
         decreaseBalance(symbol, amount);
-        addToTransactions(new Transaction("account", "withdrawal", amount, Clock.instance.getTime()));
+        addToTransactions(new Transaction("account", "withdrawal", amount, Clock.get.getTime()));
     }
 
     // deposit from atm
     public void deposit(String symbol, double amount){
         addBalance(symbol, amount);
-        addToTransactions(new Transaction("deposit", "account", amount, Clock.instance.getTime()));
+        addToTransactions(new Transaction("deposit", "account", amount, Clock.get.getTime()));
     }
 
     // convert from currency to another currency
     public void convert(String fromSymbol, String toSymbol, double amount){
         addBalance(toSymbol, amount);
         decreaseBalance(fromSymbol, amount);
-        addToTransactions(new Transaction(fromSymbol, toSymbol, amount, Clock.instance.getTime()));
+        addToTransactions(new Transaction(fromSymbol, toSymbol, amount, Clock.get.getTime()));
     }
 }

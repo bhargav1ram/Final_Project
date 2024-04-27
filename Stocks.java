@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Stocks implements AdminObserver {
     private List<Stock> stocks; // list of all stocks
-    public static final Stocks instance = new Stocks(); // singleton instance
+    public static final Stocks get = new Stocks(); // singleton instance
 
     private Stocks(){
         stocks = new ArrayList<Stock>();

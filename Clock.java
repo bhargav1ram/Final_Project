@@ -9,10 +9,10 @@ import java.time.format.DateTimeFormatter;
 
 public class Clock {
     private String curtime; // current time in the format yyyy-mm-dd
-    public final static Clock instance = new Clock();
+    public final static Clock get = new Clock();
 
     private Clock(){
-        curtime = Constants.instance.defaultTime;
+        curtime = Constants.get.defaultTime;
         // TODO: or bring time from database
     }
 
