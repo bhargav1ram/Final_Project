@@ -8,16 +8,14 @@ import java.util.*;
 public class TradingAccount extends Account {
     private List<Shares> sharesTotal; // variable to store all the shares
 
-    public TradingAccount(String uid, String accId, double openingBalance, String accType){
-        super(uid, accId, openingBalance, accType);
+    public TradingAccount(String uid, String accId, double zeroOpeningBalance, String accType){
+        super(uid, accId, 0.0, accType);
         sharesTotal = new ArrayList<>();
-        minBalance = Constants.get.minTradingsBalance;
         // TODO: update shares info in database
     }
 
     public TradingAccount(String uid, String accId, String accType){
         super(uid, accId, accType);
-        minBalance = Constants.get.minTradingsBalance;
         // TODO: populate shares with previous shares from database
     }
 

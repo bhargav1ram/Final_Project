@@ -78,14 +78,14 @@ public class Account {
         return cash.getAmount();
     }
 
-    // get balance that can be withdrawn at this point
+    // get balance that can be withdrawn from ATM at this point
     public double getWithdrawableBalance(String symbol){
-        double totalBalance = getBalance(symbol);
+        double balance = getBalance(symbol);
         if (symbol == Constants.get.usdSymbol) {
-            totalBalance = totalBalance-minBalance;
-            if (totalBalance<0.0) totalBalance = 0.0;
+            balance = balance-minBalance;
+            if (balance<0.0) balance = 0.0;
         }
-        return totalBalance;
+        return balance/(1+Constants.get.feePercent);
     }
 
     // get balance of a currency symbol
@@ -122,7 +122,6 @@ public class Account {
     // withdraw from ATM
     public void withdraw(String symbol, double amount){
         deductFee(symbol, amount*Constants.get.feePercent);
-        amount *= (1.0-Constants.get.feePercent);
         decreaseBalance(symbol, amount);
         addToTransactions(new Transaction("account", "withdrawal", amount*Currencies.get.getCurrency(symbol).getExchangeRate(), Clock.get.getTime()));
     }
