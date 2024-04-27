@@ -83,6 +83,32 @@ public class LoanableAccount extends Account implements AdminObserver {
         }
     }
 
+    // get balance that can be withdrawn from ATM at this point
+    public double getWithdrawableBalance(String symbol){
+        double balance = getBalance(symbol);
+        if (symbol == Constants.get.usdSymbol) {
+            balance = balance-minBalance;
+            if (balance<0.0) balance = 0.0;
+        }
+        return balance/(1+Constants.get.feePercent);
+    }
+
+    // withdraw from ATM
+    public void withdraw(String symbol, double amount){
+        deductFee(symbol, amount*Constants.get.feePercent);
+        decreaseBalance(symbol, amount);
+        addToTransactions(new Transaction("account", "withdrawal", amount*Currencies.get.getCurrency(symbol).getExchangeRate(), Clock.get.getTime()));
+    }
+
+    // convert from currency to another currency. Convert 100 EUR to x USD
+    public void convert(String fromSymbol, String toSymbol, double amount){
+        deductFee(fromSymbol, amount*Constants.get.feePercent);
+        amount *= (1.0-Constants.get.feePercent);
+        decreaseBalance(fromSymbol, amount);
+        addBalance(toSymbol, amount*Currencies.get.getCurrency(toSymbol).getExchangeRate()/Currencies.get.getCurrency(fromSymbol).getExchangeRate());
+        addToTransactions(new Transaction(fromSymbol, toSymbol, amount*Currencies.get.getCurrency(fromSymbol).getExchangeRate(), Clock.get.getTime()));
+    }
+
     public void getUpdateFromAdmin() {
         payInterestFromBalance();
     }
