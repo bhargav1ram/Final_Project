@@ -1,6 +1,7 @@
-/*
+/* 
  * Base class for account which will get inherited by multiple types of accounts
  */
+import java.sql.*;
 import java.util.*;
 
 public class Account {
@@ -12,6 +13,8 @@ public class Account {
     protected double minBalance; // minimum USD balance for the account
     protected String accountType; // savings or checkings or tranding
 
+}
+
     public Account(String uid, String accId, double openingBalance, String accType){
         minBalance = 0.0;
         transactions = new ArrayList<>();
@@ -21,6 +24,19 @@ public class Account {
         accountId = accId;
         accountType = accType;
         // TODO: push new account to the database
+        try (Connection conn = Database.getConnection()) {
+            String sql = "INSERT INTO Accounts (accountId, userId, accountOpenTime, minBalance, accountType) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, accountId);
+            pstmt.setString(2, userId);
+            pstmt.setTimestamp(3, Timestamp.valueOf(accountOpenTime));
+            pstmt.setDouble(4, minBalance);
+            pstmt.setString(5, accountType);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+//
 
         this.deposit(Constants.get.usdSymbol, openingBalance);
     }
