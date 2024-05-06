@@ -21,7 +21,7 @@ public class Shares {
         buyNumOfShares = new ArrayList<>();
         sellNumOfShares = new ArrayList<>();
         trades = new ArrayList<>();
-        // TODO: fill in shares info of this user and symbol from the database
+        // TODO: fill in shares info of this user and symbol from the database(When is this called?)(Save it in trading account)
     }
 
     // function to buy n shares
@@ -30,7 +30,7 @@ public class Shares {
         buyPrices.add(stock.getPrice());
         buyNumOfShares.add(numShares);
         trades.add("Bought: "+numShares+" shares, "+"Price: "+stock.getPrice()+", Time: "+Clock.get.getTime());
-        // TODO: push the current info to the database
+        // TODO: push the current info to the database???(Price can lead to confusion)
     }
 
     // function to sell n shares
@@ -40,7 +40,7 @@ public class Shares {
             sellPrices.add(stock.getPrice());
             sellNumOfShares.add(numShares);
             trades.add("Sold: "+numShares+" shares, "+"Price: "+stock.getPrice()+", Time: "+Clock.get.getTime());
-            // TODO: push the current info to the database
+            // TODO: push the current info to the database???(Price can lead to confusion)
         }
     }
 

@@ -12,7 +12,7 @@ public class Stocks implements AdminObserver {
 
     private Stocks(){
         stocks = new ArrayList<Stock>();
-        // TODO: get data from database and update stocks accordingly
+        // TODO: get data from database and update stocks accordingly??(Update how)//View all stocks
     }
 
     // adds new stock to list
@@ -46,7 +46,7 @@ public class Stocks implements AdminObserver {
     }
 
     public void getUpdateFromAdmin() {
-        // TODO: add if new stocks are added or change the prices of current stocks
+        // TODO: add if new stocks are added or change the prices of current stocks??(What is this for)(Have you left this blank for me?)
     }
     
 }

@@ -11,7 +11,7 @@ public class Currencies implements AdminObserver {
 
     private Currencies(){
         currencies = new ArrayList<Currency>();
-        // TODO: get data from database and update curriences accordingly
+        // TODO: get data from database and update curriences accordingly???(Used at startup)(Display exchange rate with usd)
     }
 
     // adds new currency to list
@@ -44,8 +44,8 @@ public class Currencies implements AdminObserver {
         return currencySymbols;
     }
 
-    public void getUpdateFromAdmin() {
-        // TODO: add if new currencies are added or change the ERs of current currencies
+    public void getUpdateFromAdmin() {//Whatever updates admin makes
+        // TODO: add if new currencies are added or change the ERs of current currencies??(Exchange rate should be calculated in java. Just values change)
     }
     
 }

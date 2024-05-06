@@ -4,7 +4,7 @@
 
 
 public class Cash {
-    private double amount; // amount of currencey of current cash
+    private double amount; // amount of currency of current cash
     private Currency currency; // the type of currency
 
     public Cash(String symbol, double am){

@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Clock {
     private String curtime; // current time in the format yyyy-mm-dd
+    private String prevtime;
     public final static Clock get = new Clock();
 
     private Clock(){
@@ -18,10 +19,15 @@ public class Clock {
 
     public void setTime(String time){
         curtime = time;
+        prevtime = getTime();
     }
 
     public String getTime(){
         return curtime;
+    }
+
+    public String getPrevTime(){
+        return prevtime;
     }
 
     public int getNumOfMonths(String startTime, String endTime){
@@ -29,11 +35,11 @@ public class Clock {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate startDate = LocalDate.parse(startTime, formatter);
         LocalDate endDate = LocalDate.parse(endTime, formatter);
-        
+
         // getting number of months between them
         Period period = Period.between(startDate, endDate);
         int months = period.getYears() * 12 + period.getMonths();
-        
+
         return months;
     }
 
@@ -43,7 +49,7 @@ public class Clock {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate startDate = LocalDate.parse(startTime, formatter);
         LocalDate endDate = LocalDate.parse(endTime, formatter);
-        
+
         // getting number of months between them
         Period period = Period.between(startDate, endDate);
         double months = period.getYears() * 12 + period.getMonths();

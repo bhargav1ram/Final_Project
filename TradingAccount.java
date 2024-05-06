@@ -11,12 +11,12 @@ public class TradingAccount extends Account {
     public TradingAccount(String uid, String accId, double zeroOpeningBalance, String accType){
         super(uid, accId, 0.0, accType);
         sharesTotal = new ArrayList<>();
-        // TODO: update shares info in database
+        // TODO: update shares info in database???(when is this used?)//On creation of trading account
     }
 
     public TradingAccount(String uid, String accId, String accType){
         super(uid, accId, accType);
-        // TODO: populate shares with previous shares from database
+        // TODO: populate shares with previous shares from database(when is this used?)//Get info of trading account from db
     }
 
     // maximum shares one can buy of a symbol due to balance restrictions
@@ -38,7 +38,7 @@ public class TradingAccount extends Account {
             sharesTotal.add(newShares);
         }
         newShares.buyShares(numOfShares);
-        // TODO: save shares to account here or in the shares class
+        // TODO: save shares to account here or in the shares class??
 
         // logging transactions and decreasing balance
         double amount = numOfShares*Stocks.get.getStock(symbol).getPrice();
@@ -72,7 +72,7 @@ public class TradingAccount extends Account {
         if (curShares.getCurrentNumOfShares() == 0) {
             sharesTotal.remove(curShares);
         }
-        // TODO: save shares to account here or in the shares class
+        // TODO: save shares to account here or in the shares class??
 
         // logging and balance changes
         double amount = numOfShares*Stocks.get.getStock(symbol).getPrice();

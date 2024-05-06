@@ -13,7 +13,7 @@ public class Account {
     protected double minBalance; // minimum USD balance for the account
     protected String accountType; // savings or checkings or tranding
 
-}
+
 
     public Account(String uid, String accId, double openingBalance, String accType){
         minBalance = 0.0;
@@ -23,20 +23,8 @@ public class Account {
         userId = uid;
         accountId = accId;
         accountType = accType;
-        // TODO: push new account to the database
-        try (Connection conn = Database.getConnection()) {
-            String sql = "INSERT INTO Accounts (accountId, userId, accountOpenTime, minBalance, accountType) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, accountId);
-            pstmt.setString(2, userId);
-            pstmt.setTimestamp(3, Timestamp.valueOf(accountOpenTime));
-            pstmt.setDouble(4, minBalance);
-            pstmt.setString(5, accountType);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-//
+         // TODO: push new account to the database(Done)//Creating the account
+
 
         this.deposit(Constants.get.usdSymbol, openingBalance);
     }
@@ -46,7 +34,8 @@ public class Account {
         userId = uid;
         accountId = accId;
         accountType = accType;
-        // TODO: get transactions and balances data from database
+        // TODO: get transactions and balances data from database(Why have you used this?)//Pull all data members given in class above
+
     }
 
     // add cash of certain currency. ex: INR 10, EUR 300
@@ -61,7 +50,7 @@ public class Account {
         if (!symbolExists) {
             balances.add(new Cash(symbol, amount));
         }
-        // TODO: update balances to the database
+        // TODO: update balances to the database (Can only add value, so need to convert or do something to remember)//Save amount as it is in db
     }
 
     // decrease cash balance of certain currency. ex: INR 10, EUR 300
@@ -71,7 +60,7 @@ public class Account {
                 balance.decreaseCash(amount);
             }
         }
-        // TODO: update balances to the database
+        // TODO: update balances to the database(Can only add value, so need to convert or do something to remember)//Save amount as it is in db
     }
 
     // get cash instance of that symbol
@@ -119,10 +108,11 @@ public class Account {
         return trans;
     }
 
+
     // updated transactions in both the class and the database
     protected void addToTransactions(Transaction transaction){
         transactions.add(transaction);
-        // TODO: update database with new transactions
+        // TODO: update database with new transactions(This stuff is incomplete right? Some account id or stuff should be there in transaction)
     }
 
     // deposit from atm
