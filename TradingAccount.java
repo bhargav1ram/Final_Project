@@ -98,7 +98,7 @@ public class TradingAccount extends Account {
     }
 
     // get shares of a particular symbol like get shares of APPL or MRST (apple or microsoft)
-    private Shares getSharesOfSymbol(String symbol){
+    public Shares getSharesOfSymbol(String symbol){
         Shares shares = null;
         for (Shares curshares : sharesTotal) {
             if (curshares.getStock().getSymbol() == symbol) {

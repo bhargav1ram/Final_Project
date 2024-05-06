@@ -9,7 +9,9 @@ public abstract class User {
     protected String userId;
     protected String password;
     protected  String role;
-    protected User user;
+    protected BankUser user;
+
+    protected BankManager manager;
     Random random = new Random();
 
     public User(String name, String userId, String password, String role) {
@@ -17,29 +19,6 @@ public abstract class User {
         this.userId = userId;
         this.password = password;
         this.role=role;
-    }
-
-
-    public boolean createNew() {
-        //Get username,role and password from frontend
-        int randomNumber = 100000 + random.nextInt(900000);
-        userId=String.valueOf(randomNumber);
-        String sql = "INSERT INTO Users (userId, name, password, role) VALUES (?, ?, ?, ?)";
-        try (Connection conn = Database.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, this.userId);
-            pstmt.setString(2, this.name);
-            pstmt.setString(3, this.password);
-            pstmt.setString(4, this.role);
-
-            int result = pstmt.executeUpdate();
-
-            return result > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-
     }
 
     public boolean checkLogin() {
@@ -64,7 +43,7 @@ public abstract class User {
             // Check if any rows were returned
             if (rs.next()) {
                 if (this.role.equals(Constants.get.bankmanager)){
-                    user = new BankManager(name,userId,password,role);
+                    manager = new BankManager(name,userId,password,role);
                 }else{
                     user = new BankUser(name,userId,password,role);
                 }
@@ -75,4 +54,7 @@ public abstract class User {
         }
         return false;  // Login failed
     }
+
+
+
 }

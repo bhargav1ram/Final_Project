@@ -16,7 +16,7 @@ public class Stocks implements AdminObserver {
     }
 
     // adds new stock to list
-    private void addStock(Stock stock){
+    public void addStock(Stock stock){
         stocks.add(stock);
     }
 
@@ -31,7 +31,7 @@ public class Stocks implements AdminObserver {
     }
 
     // update stock price
-    private void updatePrice(String symbol, double price){
+    public void updatePrice(String symbol, double price){
         Stock stock = getStock(symbol);
         stock.setPrice(price);
     }

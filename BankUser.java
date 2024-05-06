@@ -1,6 +1,8 @@
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
@@ -10,10 +12,37 @@ public class BankUser extends User {
     private SavingsAccount savingsAccount;
     private CheckingsAccount checkingsAccount;
     private TradingAccount tradingAccount;
+    private static List <BankUser> customers = new ArrayList<>();
     public BankUser(String name, String userId, String password, String role) {
         super(name, userId, password, role);
     }
 
+    public static List<BankUser> getUsers(){
+        return customers;
+    }
+    public boolean createNew() {
+        //Get username,role and password from frontend
+        int randomNumber = 100000 + random.nextInt(900000);
+        userId=String.valueOf(randomNumber);
+        String sql = "INSERT INTO Users (userId, name, password, role) VALUES (?, ?, ?, ?)";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, this.userId);
+            pstmt.setString(2, this.name);
+            pstmt.setString(3, this.password);
+            pstmt.setString(4, this.role);
+
+            int result = pstmt.executeUpdate();
+            BankUser bankUser = new BankUser(name, userId,password,role);
+            customers.add(bankUser);
+
+            return result > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
 
     //Open savings bank account
     public boolean createSavingsAccount() {
@@ -118,8 +147,6 @@ public class BankUser extends User {
         checkingsAccount.decreaseBalance(currency,amount);
 
     }
-
-
     public boolean getLoan(){
         //Ask user if they want loan from Checking or Savings Account
         String accounttype = "";
@@ -175,15 +202,15 @@ public class BankUser extends User {
         checkingsAccount.getTransactions();
     }
 
-    public void viewSavingsBalance(){
+    public double viewSavingsBalance(){
         //Get symbol from user for which currency balance (INR,USD,EUR)
         String symbol="";
-        savingsAccount.getBalance(symbol);
+        return savingsAccount.getBalance(symbol);
     }
 
-    public void viewCheckingsBalance(){
+    public double viewCheckingsBalance(){
         String symbol="";
-        checkingsAccount.getBalance(symbol);
+        return checkingsAccount.getBalance(symbol);
     }
 
     public void closeSavingsAccount(){
@@ -222,5 +249,55 @@ public class BankUser extends User {
         Transaction transaction = new Transaction(name,to,value,Clock.get.getTime());
     }
 
+    public void buyShares(){
+        //enter symbol and number of shares
+        String sym="";
+        int noOfShares= 10;
+        tradingAccount.buyShares(sym,noOfShares);
+    }
 
+    public void sellShares(){
+        //enter symbol and number of shares
+        String sym="";
+        int noOfShares= 10;
+        tradingAccount.sellShares(sym,noOfShares);
+    }
+
+    public void realisedProfit(){
+        String sym="";
+        if(tradingAccount.getSharesOfSymbol(sym)!=null)
+            tradingAccount.getSharesOfSymbol(sym).getRealisedProfit();
+    }
+
+    public void unrealisedProfit(){
+        String sym="";
+        if(tradingAccount.getSharesOfSymbol(sym)!=null)
+            tradingAccount.getSharesOfSymbol(sym).getUnrealisedProfit();
+    }
+
+    public void getOpenPositions(){
+        tradingAccount.getStockSymbols();
+    }
+
+    public boolean hasSavings(){
+        if(savingsAccount!=null){
+            return true;
+        }else
+            return false;
+    }
+
+    public boolean hasCheckings(){
+        if(checkingsAccount!=null){
+            return true;
+        }else
+            return false;
+    }
+
+    public SavingsAccount getSavings(){
+        return savingsAccount;
+    }
+
+    public CheckingsAccount getCheckings(){
+        return checkingsAccount;
+    }
 }
