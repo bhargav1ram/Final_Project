@@ -73,7 +73,7 @@ public class LoginPanel extends JPanel{
         cons.gridy = 2;
         cons.anchor = GridBagConstraints.EAST;
         box.add(login,cons);
-        LoginListener ll = new LoginListener();
+        LoginListener ll = new LoginListener(userName,password);
         login.addActionListener(ll);
         
 

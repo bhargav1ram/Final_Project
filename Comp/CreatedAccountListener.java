@@ -41,6 +41,7 @@ class CreatedAccountListener implements ActionListener {
         if (result) {
             JOptionPane.showMessageDialog(null, "Account created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
             // Possibly clear fields or switch panels
+            Project_UI.switchPanel(new LoginPanel());
         } else {
             JOptionPane.showMessageDialog(null, "Failed to create account.", "Error", JOptionPane.ERROR_MESSAGE);
         }
