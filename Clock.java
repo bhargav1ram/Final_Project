@@ -14,12 +14,18 @@ public class Clock {
 
     private Clock(){
         curtime = Constants.get.defaultTime;
+        prevtime = null;
         // TODO: or bring time from database
     }
 
     public void setTime(String time){
+
+
+        if(getIsBefore(prevtime,time)){
+            prevtime = getTime();
+        }
         curtime = time;
-        prevtime = getTime();
+
     }
 
     public String getTime(){
@@ -56,5 +62,19 @@ public class Clock {
         double years = months/12.0;
 
         return years;
+    }
+
+    public boolean getIsBefore(String Date1, String Date2) {
+        // converting strings to time
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate Date = LocalDate.parse(Date1, formatter);
+        LocalDate secondDate = LocalDate.parse(Date2, formatter);
+
+        if(Date.isBefore(secondDate)){
+            return true;
+        }
+
+        return false;
+
     }
 }

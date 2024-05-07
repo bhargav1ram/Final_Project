@@ -47,12 +47,12 @@ public abstract class User {
                 }else{
                     user = new BankUser(name,userId,password,role);
                 }
-                return true;  // Login successful
+                return true;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;  // Login failed
+        return false;
     }
 
 

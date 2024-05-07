@@ -29,8 +29,10 @@ public class LoanableAccount extends Account implements AdminObserver {
     // get loans in string format
     public List<String> getLoansDesc() {
         List<String> lns = new ArrayList<>();
-        for (Loan loan : loans) {
-            lns.add(loan.toString());
+        if(loans!=null) {
+            for (Loan loan : loans) {
+                lns.add(loan.toString());
+            }
         }
         return lns;
     }

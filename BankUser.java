@@ -134,27 +134,34 @@ public class BankUser extends User {
         checkingsAccount.addBalance(currency,amount);
 
     }
+
+
     public void removeMoneyFromSavings(){
         String currency= ""; //Add currency symbol
         double amount = 10;//Add euro amount
-        savingsAccount.decreaseBalance(currency,amount);
+        if(amount<savingsAccount.getWithdrawableBalance(currency)) {
+            savingsAccount.decreaseBalance(currency, amount);
+        }else{
+            //Cant withdraw more than balance
+        }
     }
 
     public void removeMoneyFromCheckings(){
         String currency= ""; //Add currency symbol
         double amount = 10;//Add euro amount
-        double transactionFee= amount *(Constants.get.feePercent/100);
-        BankManager.getBanksavingsAccount().addBalance(currency,transactionFee);
-        checkingsAccount.decreaseBalance(currency,amount);
-
+        if(amount<checkingsAccount.getWithdrawableBalance(currency)) {
+            double transactionFee = amount * (Constants.get.feePercent);
+            BankManager.getBanksavingsAccount().addBalance(currency, transactionFee);
+            checkingsAccount.withdraw(currency, amount);
+        }
     }
     public boolean getLoan(){
         //Ask user if they want loan from Checking or Savings Account
         String accounttype = "";
 
         if (accounttype.equals(Constants.get.savingsType)){
-            if(savingsAccount.hasDefaultedLoan()){
-                return false;
+            if(savingsAccount== null || savingsAccount.hasDefaultedLoan()){//If no savings account or if user has defaulted loan no savings account
+                return false;//Not allowed to take loan if user has defaulted
             }else {//Ask user for the amount of loan they want and the collateral they are putting
                 double amount = 100.0;
                 String collateral = "";
@@ -162,24 +169,24 @@ public class BankUser extends User {
                 return true;
             }
         }else if(accounttype.equals(Constants.get.checkingsType)){
-            if(savingsAccount.hasDefaultedLoan()){
+            if(checkingsAccount== null|| checkingsAccount.hasDefaultedLoan()){
                 return false;
             }else {//Ask user for the amount of loan they want and the collateral they are putting
                 double amount = 100.0;
                 String collateral = "";
-                savingsAccount.takeNewLoan(amount, collateral);
+                checkingsAccount.takeNewLoan(amount, collateral);
                 return true;
             }
         }
         return false;
     }
 
-    public void viewSavingsLoans(){
-        savingsAccount.getLoansDesc();
+    public List<String> viewSavingsLoans(){
+        return savingsAccount.getLoansDesc();
     }
 
-    public void viewCheckingsLoans(){
-        checkingsAccount.getLoansDesc();
+    public List<String> viewCheckingsLoans(){
+        return checkingsAccount.getLoansDesc();
     }
 
     public void paySavingsLoans(){
@@ -236,28 +243,39 @@ public class BankUser extends User {
         //Get who the money is being sent to, and what amount is being sent.
         String to = "";
         double value = 0.0;
-        savingsAccount.decreaseBalance(Constants.get.usdSymbol, value);
-        Transaction transaction = new Transaction(name,to,value,Clock.get.getTime());
+        if(value<savingsAccount.getWithdrawableBalance(Constants.get.usdSymbol)) {
+            savingsAccount.decreaseBalance(Constants.get.usdSymbol, value);
+            Transaction transaction = new Transaction(name, to, value, Clock.get.getTime());
+        }
     }
 
     public void performCheckingsAccountTransactions(){
         //Get who the money is being sent to, and what amount is being sent.
         String to = "";
         double value = 0.0;
-        double transactionFee= value *(Constants.get.feePercent/100);
-        checkingsAccount.decreaseBalance(Constants.get.usdSymbol, value+transactionFee);
-        BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, transactionFee);
-        Transaction transaction = new Transaction(name,to,value,Clock.get.getTime());
+        if(value<checkingsAccount.getWithdrawableBalance(Constants.get.usdSymbol)) {
+            double transactionFee = value * (Constants.get.feePercent / 100);
+            checkingsAccount.decreaseBalance(Constants.get.usdSymbol, value + transactionFee);
+            BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, transactionFee);
+            Transaction transaction = new Transaction(name, to, value, Clock.get.getTime());
+        }
     }
 
-    public void buyShares(){
+    public void buySharesViaSharesCount(){
         //enter symbol and number of shares
         String sym="";
         int noOfShares= 10;
         tradingAccount.buyShares(sym,noOfShares);
     }
 
-    public void sellShares(){
+    public void buySharesViaUSDAmount(){
+        //enter symbol and number of shares
+        String sym="";
+        double amount= 10;
+        tradingAccount.buySharesInUSD(sym,amount);
+    }
+
+    public void sellSharesviaSharesCount(){
         //enter symbol and number of shares
         String sym="";
         int noOfShares= 10;
@@ -301,4 +319,5 @@ public class BankUser extends User {
     public CheckingsAccount getCheckings(){
         return checkingsAccount;
     }
+
 }

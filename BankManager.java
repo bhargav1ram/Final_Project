@@ -74,4 +74,8 @@ public class BankManager extends User {
             }
         return  poorUsers;
         }
+
+        public void collectInterestFromLoans(){
+
+        }
     }
