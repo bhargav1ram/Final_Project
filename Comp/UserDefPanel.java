@@ -84,7 +84,13 @@ public class UserDefPanel extends JPanel{
         home.addActionListener(homel);
         this.add(home);
 
-        JPanel page = new JPanel(new GridBagLayout());
+        JButton logout = new JButton("logout");
+        logout.setBounds(1620,0,100,35);
+        LogoutListener lol = new LogoutListener();
+        logout.addActionListener(lol);
+        this.add(logout);
+        
+        JPanel page = new JPanel();
         Border pad = BorderFactory.createEmptyBorder(10,10,10,10);
         Border line = BorderFactory.createLineBorder(Color.BLACK);
 
@@ -106,6 +112,10 @@ public class UserDefPanel extends JPanel{
         }
     }
 }
+
+
+
+
 /* 
 
 import java.awt.*;

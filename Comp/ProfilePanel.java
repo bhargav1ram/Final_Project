@@ -32,15 +32,26 @@ public class ProfilePanel extends JPanel{
         cons.anchor = GridBagConstraints.WEST;
         this.add(nameLabel,cons);
 
-        JLabel name =  new JLabel("Name");
+        JLabel name =  new JLabel();
         
         cons.gridx = 1;
         cons.gridy = 0;
         cons.anchor = GridBagConstraints.WEST;
         this.add(name,cons);
 
+        JLabel userIDLabel =  new JLabel("UserID");
         
-;
+        cons.gridx = 0;
+        cons.gridy = 0;
+        cons.anchor = GridBagConstraints.WEST;
+        this.add(userIDLabel,cons);
+
+        JLabel userID =  new JLabel();
+        
+        cons.gridx = 1;
+        cons.gridy = 0;
+        cons.anchor = GridBagConstraints.WEST;
+        this.add(userID,cons);
 
         
 
