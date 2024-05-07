@@ -1,3 +1,5 @@
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,8 +25,9 @@ public class BankUser extends User {
     public boolean createNew() {
         //Get username,role and password from frontend
         int randomNumber = 100000 + random.nextInt(900000);
+        password = BCrypt.hashpw(this.password, BCrypt.gensalt());
         userId=String.valueOf(randomNumber);
-        String sql = "INSERT INTO Users (userId, name, password, role) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Users (UserID, Name, Password, Role) VALUES (?, ?, ?, ?)";
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, this.userId);

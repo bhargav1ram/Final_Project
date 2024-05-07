@@ -1,3 +1,5 @@
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,22 +27,23 @@ public abstract class User {
 
         String username="";
         String password="";
-        String role="";//Based on login page they choose
-        // SQL query to check the username, password, and role
-        String sql = "SELECT * FROM users WHERE username = ? AND password = ? AND role = ?";
+        String role="";
+        password = BCrypt.hashpw(this.password, BCrypt.gensalt());
+
+        String sql = "SELECT * FROM Users WHERE UserID = ? AND Password = ? AND Role = ?";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // Setting the parameters
+
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             pstmt.setString(3, role);
 
-            // Execute the query
+
             ResultSet rs = pstmt.executeQuery();
 
-            // Check if any rows were returned
+
             if (rs.next()) {
                 if (this.role.equals(Constants.get.bankmanager)){
                     manager = new BankManager(name,userId,password,role);
