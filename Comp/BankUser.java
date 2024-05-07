@@ -44,7 +44,6 @@ public class BankUser extends User {
 
     }
 
-
     //Open savings bank account
     public boolean createSavingsAccount() {
         if (savingsAccount == null) {
