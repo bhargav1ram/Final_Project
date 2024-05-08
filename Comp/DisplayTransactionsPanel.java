@@ -1,14 +1,18 @@
 import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import javax.swing.table.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 public class DisplayTransactionsPanel extends JPanel {
     private BufferedImage backgroundImage;
-    private JTable transactionsTable;
+    private JList<String> transactionsList;
+    private JComboBox<String> accountComboBox;  // Declare at class level
 
     public DisplayTransactionsPanel() {
         // Load the background image
@@ -23,37 +27,48 @@ public class DisplayTransactionsPanel extends JPanel {
     }
 
     private void initializeComponents() {
-        String[] columnNames = {"Transaction ID", "Amount", "Date"};
-        Object[][] data = {};  // Example data, should be dynamically loaded
+        // Label for Select Account
+        JLabel accountLabel = new JLabel("Select Account:");
+        this.add(accountLabel, BorderLayout.NORTH);
 
-        // Setup the table model and the table
-        DefaultTableModel model = new DefaultTableModel(data, columnNames);
-        transactionsTable = new JTable(model);
-        transactionsTable.setFillsViewportHeight(true);
-        JScrollPane scrollPane = new JScrollPane(transactionsTable);
-        add(scrollPane, BorderLayout.CENTER);
+        // ComboBox for Selecting Account
+        accountComboBox = new JComboBox<>();
+        this.add(accountComboBox, BorderLayout.NORTH);
 
-        // Add navigation buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton prevButton = new JButton("Previous");
-        JButton nextButton = new JButton("Next");
-        buttonPanel.add(prevButton);
-        buttonPanel.add(nextButton);
+        loadAccountIds();  // Load Account before creating Account object
 
-        // Add listeners to buttons
-        prevButton.addActionListener(e -> navigateTransactions(-1));
-        nextButton.addActionListener(e -> navigateTransactions(1));
+        // Assuming accountID is selected from accountComboBox
+        String accID = (String) accountComboBox.getSelectedItem();
+        Account acc = new Account(Session.getInstance().getUserId(), accID, "AccountType"); // Placeholder for account type
+        List<String> transactions = acc.getTransactions(); // Fetch transactions
 
-        // Add button panel to the south region of this panel
-        add(buttonPanel, BorderLayout.SOUTH);
+        transactionsList = new JList<>(transactions.toArray(new String[0]));
+
+        // Setting up the scroll pane
+        JScrollPane scrollPane = new JScrollPane(transactionsList);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        transactionsList.setOpaque(false);
+        transactionsList.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        transactionsList.setForeground(Color.WHITE);
+
+        this.add(scrollPane, BorderLayout.CENTER);
     }
 
-    private void navigateTransactions(int direction) {
-        // Implement the functionality to fetch previous or next 20 transactions
-        // direction > 0 for next, direction < 0 for previous
-        // This might involve changing the model data of the table and refreshing it
-        System.out.println("Navigate: " + (direction > 0 ? "Next" : "Previous"));
-        // Example: loadNextTransactions(); or loadPreviousTransactions();
+    private void loadAccountIds() {
+        String query = "SELECT AccountID FROM bankaccounts WHERE UserID = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, Session.getInstance().getUserId());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String accountId = rs.getString("AccountID");
+                accountComboBox.addItem(accountId);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading account IDs: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
