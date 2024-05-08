@@ -39,7 +39,7 @@ public class Account {
                 pstmt.setString(1, accountId);
                 pstmt.setString(2, userId);
                 pstmt.setString(3, accountType);
-                pstmt.setDouble(4, openingBalance);
+                pstmt.setDouble(4, 0.0);
                 pstmt.setDouble(5, empty);
                 pstmt.setDouble(6, empty);
                 pstmt.setDate(7, java.sql.Date.valueOf(accountOpenTime));
@@ -47,7 +47,7 @@ public class Account {
                 pstmt.setString(1, accountId);
                 pstmt.setString(2, userId);
                 pstmt.setString(3, Constants.get.usdSymbol);
-                pstmt.setDouble(4, openingBalance);
+                pstmt.setDouble(4, 0.0);
                 pstmt.setDate(5, java.sql.Date.valueOf(accountOpenTime));
             }
 
