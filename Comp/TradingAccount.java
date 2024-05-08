@@ -1,0 +1,221 @@
+/*
+ * Class which supports all functionality of tranding account
+ * which has a balance and has functionality to buy and sell stocks
+ */
+
+import java.util.*;
+import java.sql.*;
+
+public class TradingAccount extends Account {
+    private List<Shares> sharesTotal; // variable to store all the shares
+
+    public TradingAccount(String uid, String accId, double zeroOpeningBalance, String accType){
+        super(uid, accId, 0.0, accType);
+        sharesTotal = new ArrayList<>();
+        // TODO: update shares info in database???(when is this used?)//On creation of trading account
+    }
+
+    public TradingAccount(String uid, String accId, String accType){
+        super(uid, accId, accType);
+        sharesTotal = new ArrayList<>();
+        // TODO: populate shares with previous shares from database(when is this used?)//Get info of trading account from db
+        String sql = "SELECT StockSymbol, currentNumOfShares, buyPrices, sellPrices, buyNumOfShares, sellNumOfShares, trades FROM StockHoldings WHERE AccountID = ?";
+
+        try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, accountId);  // Set the account ID parameter
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String symbol = rs.getString("StockSymbol");                    
+                    double currentNumOfShares = rs.getDouble("currentNumOfShares");
+                    List<Double> buyPrices = Arrays.asList((Double []) rs.getArray("buyPrices").getArray());
+                    List<Double> sellPrices = Arrays.asList((Double []) rs.getArray("sellPrices").getArray());
+                    List<Double> buyNumOfShares = Arrays.asList((Double []) rs.getArray("buyNumOfShares").getArray());
+                    List<Double> sellNumOfShares = Arrays.asList((Double []) rs.getArray("sellNumOfShares").getArray());
+                    List<String> trades = Arrays.asList((String []) rs.getArray("trades").getArray());
+
+                    Shares curShares = new Shares("", symbol);
+                    curShares.setCurrentNumOfShares(currentNumOfShares);
+                    curShares.setBuyPrices(buyPrices);
+                    curShares.setSellPrices(sellPrices);
+                    curShares.setBuyNumOfShares(buyNumOfShares);
+                    curShares.setSellNumOfShares(sellNumOfShares);
+                    curShares.setTrades(trades);
+
+                    sharesTotal.add(curShares);
+                }
+
+            }
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
+    }
+
+    private void updateSharesToDb(String symbol){
+        String sql = "UPDATE StockHoldings SET currentNumOfShares = ?, buyPrices = ?, sellPrices = ?, buyNumOfShares = ?, sellNumOfShares = ?, trades = ? WHERE TradingAccountID = ? AND StockSymbol = ?";
+
+        try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            Shares curShares = getSharesOfSymbol(symbol);
+            pstmt.setDouble(1, curShares.getCurrentNumOfShares());
+            pstmt.setArray(2, conn.createArrayOf("DECIMAL", curShares.getBuyPrices().toArray()));
+            pstmt.setArray(3, conn.createArrayOf("DECIMAL", curShares.getSellPrices().toArray()));
+            pstmt.setArray(4, conn.createArrayOf("DECIMAL", curShares.getBuyNumOfShares().toArray()));
+            pstmt.setArray(5, conn.createArrayOf("DECIMAL", curShares.getSellNumOfShares().toArray()));
+            pstmt.setArray(6, conn.createArrayOf("VARCHAR", curShares.getTrades().toArray()));
+            pstmt.setString(7, accountId);
+            pstmt.setString(8, symbol);
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("shares successfully added to the database.");
+            } else {
+                System.out.println("Failed to add the shares to the database.");
+            }
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
+    }
+
+    private void insertSharesToDb(String symbol){
+        String sql = "INSERT INTO StockHoldings (TradingAccountID, StockSymbol, currentNumOfShares, buyPrices, sellPrices, buyNumOfShares, sellNumOfShares, trades) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            Shares curShares = getSharesOfSymbol(symbol);
+            
+            pstmt.setString(1, accountId);
+            pstmt.setString(2, symbol);
+            pstmt.setDouble(3, curShares.getCurrentNumOfShares());
+            pstmt.setArray(4, conn.createArrayOf("DECIMAL", curShares.getBuyPrices().toArray()));
+            pstmt.setArray(5, conn.createArrayOf("DECIMAL", curShares.getSellPrices().toArray()));
+            pstmt.setArray(6, conn.createArrayOf("DECIMAL", curShares.getBuyNumOfShares().toArray()));
+            pstmt.setArray(7, conn.createArrayOf("DECIMAL", curShares.getSellNumOfShares().toArray()));
+            pstmt.setArray(8, conn.createArrayOf("VARCHAR", curShares.getTrades().toArray()));
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("shares successfully added to the database.");
+            } else {
+                System.out.println("Failed to add the shares to the database.");
+            }
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
+    }
+
+    // maximum shares one can buy of a symbol due to balance restrictions
+    public double maxSharesCanBuy(String symbol){
+        return getBalance(Constants.get.usdSymbol)/Stocks.get.getStock(symbol).getPrice();
+    }
+
+    // maximum shares In USD amounts one can buy of a symbol due to balance restrictions
+    public double maxSharesCanBuyInUSD(String symbol){
+        return getBalance(Constants.get.usdSymbol);
+    }
+
+    // function to buy shares in number of shares of a symbol
+    public void buyShares(String symbol, double numOfShares){
+        // adding shares
+        Shares newShares = getSharesOfSymbol(symbol);
+        if (newShares == null) {
+            newShares = new Shares(userId, symbol);
+            sharesTotal.add(newShares);
+            insertSharesToDb(symbol);
+        }
+        newShares.buyShares(numOfShares);
+        // TODO: save shares to account here or in the shares class??
+        updateSharesToDb(symbol);
+        // logging transactions and decreasing balance
+        double amount = numOfShares*Stocks.get.getStock(symbol).getPrice();
+        decreaseBalance(Constants.get.usdSymbol, amount);
+        addToTransactions(new Transaction("account", "bought "+numOfShares+" shares of "+symbol, amount, Clock.get.getTime()));
+    }
+
+    // use this to buy shares in USD amounts
+    public void buySharesInUSD(String symbol, double amount){
+        buyShares(symbol, amount/Stocks.get.getStock(symbol).getPrice());
+    }
+
+    // maximum shares one can sell for a symbol
+    public double maxSharesCanSell(String symbol){
+        Shares curShares = getSharesOfSymbol(symbol);
+        if (curShares == null) {
+            return 0.0;
+        }
+        return curShares.getCurrentNumOfShares();
+    }
+
+    // maximum shares one can sell in USD for a symbol
+    public double maxSharesCanSellInUSD(String symbol){
+        return maxSharesCanSell(symbol)*Stocks.get.getStock(symbol).getPrice();
+    }
+
+    // buy n number of shares of a symbol
+    public void sellShares(String symbol, double numOfShares){
+        Shares curShares = getSharesOfSymbol(symbol);
+        curShares.sellShares(numOfShares);
+        // TODO: save shares to account here or in the shares class??
+        updateSharesToDb(symbol);
+        // logging and balance changes
+        double amount = numOfShares*Stocks.get.getStock(symbol).getPrice();
+        addBalance(Constants.get.usdSymbol, amount);
+        addToTransactions(new Transaction("sold "+numOfShares+" shares of "+symbol, "account", amount, Clock.get.getTime()));
+    }
+
+    // buy shares of a symbol of amount x in USD
+    public void sellSharesInUSD(String symbol, double amount){
+        sellShares(symbol, amount/Stocks.get.getStock(symbol).getPrice());
+    }
+
+    // doesn't automatically reduce savings balance
+    public void depositFromSavings(double amount){
+        addBalance(Constants.get.usdSymbol, amount);
+        addToTransactions(new Transaction("savings account", "account", amount, Clock.get.getTime()));
+    }
+
+    // doesn't automatically increase savings balance
+    public void withdrawIntoSavings(double amount){
+        decreaseBalance(Constants.get.usdSymbol, amount);
+        addToTransactions(new Transaction("account", "savings account", amount, Clock.get.getTime()));
+    }
+
+    // get shares of a particular symbol like get shares of APPL or MRST (apple or microsoft)
+    public Shares getSharesOfSymbol(String symbol){
+        Shares shares = null;
+        for (Shares curshares : sharesTotal) {
+            if (curshares.getStock().getSymbol() == symbol) {
+                shares = curshares;
+            }
+        }
+        return shares;
+    }
+
+    // gets all the symbols that the user owns
+    public List<String> getStockSymbols(){
+        List<String> sym = new ArrayList<>();
+        for (Shares share : sharesTotal) {
+            sym.add(share.getStock().getSymbol());
+        }
+        return sym;
+    }
+
+    // gets shares description
+    public List<String> getSharesDesc(){
+        List<String> desc = new ArrayList<>();
+        for (Shares share : sharesTotal) {
+            desc.add(share.toString());
+        }
+        return desc;
+    }
+}
