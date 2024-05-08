@@ -47,6 +47,7 @@ public class BankManager extends User {
     }
     public void changeTime(){
         //Get date from user
+
         String time="";
         Clock.get.setTime(time);
         payInterest();
