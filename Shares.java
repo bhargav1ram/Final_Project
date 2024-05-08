@@ -21,6 +21,7 @@ public class Shares {
         buyNumOfShares = new ArrayList<>();
         sellNumOfShares = new ArrayList<>();
         trades = new ArrayList<>();
+        currentNumOfShares = 0.0;
         // TODO: fill in shares info of this user and symbol from the database(When is this called?)(Save it in trading account)
     }
 
@@ -116,4 +117,43 @@ public class Shares {
         return currentNumOfShares+" shares of "+stock.getName()+" ("+stock.getSymbol()+") worth $"+getUSDVal();
     }
 
+    public List<Double> getBuyPrices() {
+        return buyPrices;
+    }
+
+    public void setBuyPrices(List<Double> buyPrices) {
+        this.buyPrices = buyPrices;
+    }
+    
+    public List<Double> getSellPrices() {
+        return sellPrices;
+    }
+
+    public void setSellPrices(List<Double> sellPrices) {
+        this.sellPrices = sellPrices;
+    }
+
+    public List<Double> getBuyNumOfShares() {
+        return buyNumOfShares;
+    }
+
+    public void setBuyNumOfShares(List<Double> buyNumOfShares) {
+        this.buyNumOfShares = buyNumOfShares;
+    }
+
+    public List<Double> getSellNumOfShares() {
+        return sellNumOfShares;
+    }
+
+    public void setSellNumOfShares(List<Double> sellNumOfShares) {
+        this.sellNumOfShares = sellNumOfShares;
+    }
+
+    public void setCurrentNumOfShares(double currentNumOfShares) {
+        this.currentNumOfShares = currentNumOfShares;
+    }
+
+    public void setTrades(List<String> trades) {
+        this.trades = trades;
+    }
 }

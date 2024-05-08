@@ -19,7 +19,7 @@ public class TradingAccount extends Account {
         super(uid, accId, accType);
         sharesTotal = new ArrayList<>();
         // TODO: populate shares with previous shares from database(when is this used?)//Get info of trading account from db
-        String sql = "SELECT LoanID, LoanAmount, InterestRate, LoanDate, Collateral, , Currency FROM Loans WHERE AccountID = ?";
+        String sql = "SELECT StockSymbol, currentNumOfShares, buyPrices, sellPrices, buyNumOfShares, sellNumOfShares, trades FROM StockHoldings WHERE AccountID = ?";
 
         try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -28,17 +28,84 @@ public class TradingAccount extends Account {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    int loanId = rs.getInt("LoanID");
-                    double loanAmount = rs.getDouble("LoanAmount");
-                    double interestRate = rs.getDouble("InterestRate");
-                    String loanDate = String.valueOf(rs.getDate("LoanDate").toLocalDate());
-                    String collateral = rs.getString("Collateral");
-                    String currency = rs.getString("Currency");
-                    double defaults = rs.getDouble("Defaults");
+                    String symbol = rs.getString("StockSymbol");                    
+                    double currentNumOfShares = rs.getDouble("currentNumOfShares");
+                    List<Double> buyPrices = Arrays.asList((Double []) rs.getArray("buyPrices").getArray());
+                    List<Double> sellPrices = Arrays.asList((Double []) rs.getArray("sellPrices").getArray());
+                    List<Double> buyNumOfShares = Arrays.asList((Double []) rs.getArray("buyNumOfShares").getArray());
+                    List<Double> sellNumOfShares = Arrays.asList((Double []) rs.getArray("sellNumOfShares").getArray());
+                    List<String> trades = Arrays.asList((String []) rs.getArray("trades").getArray());
 
-                    // loans.add(new Loan(loanAmount, loanDate, defaults, collateral));
+                    Shares curShares = new Shares("", symbol);
+                    curShares.setCurrentNumOfShares(currentNumOfShares);
+                    curShares.setBuyPrices(buyPrices);
+                    curShares.setSellPrices(sellPrices);
+                    curShares.setBuyNumOfShares(buyNumOfShares);
+                    curShares.setSellNumOfShares(sellNumOfShares);
+                    curShares.setTrades(trades);
+
+                    sharesTotal.add(curShares);
                 }
 
+            }
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
+    }
+
+    private void updateSharesToDb(String symbol){
+        String sql = "UPDATE StockHoldings SET currentNumOfShares = ?, buyPrices = ?, sellPrices = ?, buyNumOfShares = ?, sellNumOfShares = ?, trades = ? WHERE TradingAccountID = ? AND StockSymbol = ?";
+
+        try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            Shares curShares = getSharesOfSymbol(symbol);
+            pstmt.setDouble(1, curShares.getCurrentNumOfShares());
+            pstmt.setArray(2, conn.createArrayOf("DECIMAL", curShares.getBuyPrices().toArray()));
+            pstmt.setArray(3, conn.createArrayOf("DECIMAL", curShares.getSellPrices().toArray()));
+            pstmt.setArray(4, conn.createArrayOf("DECIMAL", curShares.getBuyNumOfShares().toArray()));
+            pstmt.setArray(5, conn.createArrayOf("DECIMAL", curShares.getSellNumOfShares().toArray()));
+            pstmt.setArray(6, conn.createArrayOf("VARCHAR", curShares.getTrades().toArray()));
+            pstmt.setString(7, accountId);
+            pstmt.setString(8, symbol);
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("shares successfully added to the database.");
+            } else {
+                System.out.println("Failed to add the shares to the database.");
+            }
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
+    }
+
+    private void insertSharesToDb(String symbol){
+        String sql = "INSERT INTO StockHoldings (TradingAccountID, StockSymbol, currentNumOfShares, buyPrices, sellPrices, buyNumOfShares, sellNumOfShares, trades) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            Shares curShares = getSharesOfSymbol(symbol);
+            
+            pstmt.setString(1, accountId);
+            pstmt.setString(2, symbol);
+            pstmt.setDouble(3, curShares.getCurrentNumOfShares());
+            pstmt.setArray(4, conn.createArrayOf("DECIMAL", curShares.getBuyPrices().toArray()));
+            pstmt.setArray(5, conn.createArrayOf("DECIMAL", curShares.getSellPrices().toArray()));
+            pstmt.setArray(6, conn.createArrayOf("DECIMAL", curShares.getBuyNumOfShares().toArray()));
+            pstmt.setArray(7, conn.createArrayOf("DECIMAL", curShares.getSellNumOfShares().toArray()));
+            pstmt.setArray(8, conn.createArrayOf("VARCHAR", curShares.getTrades().toArray()));
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("shares successfully added to the database.");
+            } else {
+                System.out.println("Failed to add the shares to the database.");
             }
             Thread.sleep(100);
         } catch (Exception e) {
@@ -64,10 +131,11 @@ public class TradingAccount extends Account {
         if (newShares == null) {
             newShares = new Shares(userId, symbol);
             sharesTotal.add(newShares);
+            insertSharesToDb(symbol);
         }
         newShares.buyShares(numOfShares);
         // TODO: save shares to account here or in the shares class??
-
+        updateSharesToDb(symbol);
         // logging transactions and decreasing balance
         double amount = numOfShares*Stocks.get.getStock(symbol).getPrice();
         decreaseBalance(Constants.get.usdSymbol, amount);
@@ -97,11 +165,8 @@ public class TradingAccount extends Account {
     public void sellShares(String symbol, double numOfShares){
         Shares curShares = getSharesOfSymbol(symbol);
         curShares.sellShares(numOfShares);
-        if (curShares.getCurrentNumOfShares() == 0) {
-            sharesTotal.remove(curShares);
-        }
         // TODO: save shares to account here or in the shares class??
-
+        updateSharesToDb(symbol);
         // logging and balance changes
         double amount = numOfShares*Stocks.get.getStock(symbol).getPrice();
         addBalance(Constants.get.usdSymbol, amount);
