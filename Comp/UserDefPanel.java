@@ -124,6 +124,7 @@ public class UserDefPanel extends JPanel{
         curPanel = new ProfilePanel();
             
         page.add(curPanel);
+        curPanel.setSize(page.getWidth(), page.getHeight());
        
     }
 

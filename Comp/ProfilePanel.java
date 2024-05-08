@@ -11,7 +11,7 @@ public class ProfilePanel extends JPanel {
     public ProfilePanel() {
         // Load the background image
         try {
-            backgroundImage = ImageIO.read(new File("C:\\Users\\pbhar\\OneDrive\\Desktop\\Code\\Java-8\\Swing\\pic.jpg"));
+            //backgroundImage = ImageIO.read(new File("C:\\Users\\pbhar\\OneDrive\\Desktop\\Code\\Java-8\\Swing\\pic.jpg"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -20,7 +20,8 @@ public class ProfilePanel extends JPanel {
         GridBagConstraints cons = new GridBagConstraints();
         cons.fill = GridBagConstraints.HORIZONTAL;
         cons.insets = new Insets(20, 20, 20, 20); // Increased padding
-
+        cons.weightx = 0.5;
+        cons.weighty = 0.5;
         // Welcome label
         JLabel welcomeLabel = new JLabel("Welcome, " + Session.getInstance().getUserName() + "!");
         welcomeLabel.setFont(new Font("Serif", Font.BOLD, 24)); // Bigger font size
