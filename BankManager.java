@@ -52,16 +52,31 @@ public class BankManager extends User {
 
     }
 
-    public void payInterest(){//Not complete
-        //Sql query to check accounts which have higher balance than minimumBalanceForInterests they are given interest at interestRate
-        double Interest = Constants.get.interestRate;
-        double MinimumBalance = Constants.get.minimumBalanceForInterests;
-        int monthspassed = Clock.get.getNumOfMonths(Clock.get.getPrevTime(), Clock.get.getTime());
-        if(monthspassed>0) {
-            Double formula = (Interest * monthspassed)/(100*12);//Multiply this formula with ever person who has minimum savings balance for interest
+    public static void payInterest(){//Not complete
+        String sql = "SELECT AccountId, UserID, AccountType FROM BankAccounts";
 
+        try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String accountId = rs.getString("AccountId");
+                    String userId = rs.getString("UserID");
+                    String accType = rs.getString("AccountType");
+                    LoanableAccount account = null;
+                    if (accType.equals("Savings")) {
+                        account = new SavingsAccount(userId, accountId, accType);
+                    } else if (accType.equals("Checkings")) {
+                        account = new CheckingsAccount(userId, accountId, accType);
+                    }
+                    account.payInterestFromBalance();
+                }
+
+            }
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
         }
-
     }
     public void addStocks(){
         Stock stock= new Stock();
@@ -75,10 +90,7 @@ public class BankManager extends User {
         double price = 0;
         Stocks.get.updatePrice(symbol,price);
     }
-    public void changeTime(){
-        //Get date from user
-
-        String time="";
+    public static void changeTime(String time){
         Clock.get.setTime(time);
         payInterest();
     }
