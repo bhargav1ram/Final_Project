@@ -26,7 +26,7 @@ public class Account {
         double empty =0.0;
          // TODO: push new account to the database(Done)//Creating the account
         if(accountType!=Constants.get.tradingType) {
-            sql = "INSERT INTO BankAccounts (AccountID, UserID, AccountType, USDBalance, Balance, EURBalance, DayOpened) VALUES (?, ?, ?, ?, ?, ?, ?);";
+            sql = "INSERT INTO BankAccounts (AccountID, UserID, AccountType, USDBalance, INRBalance, EURBalance, DayOpened) VALUES (?, ?, ?, ?, ?, ?, ?);";
         }else{
             sql = "INSERT INTO TradingAccounts (TradingAccountID, UserID, AccountType, Balance, DayOpened) VALUES (?, ?, ?, ?, ?, ?, ?);";
         }
