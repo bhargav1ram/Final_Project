@@ -16,9 +16,39 @@ public class BankManager extends User {
         return banksavingsAccount;
     }
 
-    public void getTodayTransactions(){//Not complete
+    public void getTodayTransactions(){
         String time =Clock.get.getTime();
         //SQL Query to show all transactions that happened today
+        String sql = "SELECT TransactionID, AccountID, FROM_, TO_, Amount, TransactionDate FROM Transactions WHERE TransactionDate = ?";
+
+        try (Connection conn = Database.getConnection(); // Assuming Database.getConnection() is implemented elsewhere
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDate(1, java.sql.Date.valueOf(time)); // Set the parameter to today's date
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                boolean hasTransactions = false;
+                while (rs.next()) {
+                    int transactionId = rs.getInt("TransactionID");
+                    String accountId = rs.getString("AccountID");
+                    String from = rs.getString("FROM_");
+                    String to = rs.getString("TO_");
+                    double amount = rs.getDouble("Amount");
+                    String transactionDate = String.valueOf(rs.getDate("TransactionDate").toLocalDate());
+
+                    // Print each transaction
+                    System.out.printf("Transaction ID: %d, Account ID: %s, From: %s, To: %s, Amount: %.2f, Date: %s\n",
+                            transactionId, accountId, from, to, amount, transactionDate);
+                    hasTransactions = true;
+                }
+                if (!hasTransactions) {
+                    System.out.println("No transactions found for today.");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
 
     }
 
@@ -47,6 +77,7 @@ public class BankManager extends User {
     }
     public void changeTime(){
         //Get date from user
+
         String time="";
         Clock.get.setTime(time);
         payInterest();
@@ -74,4 +105,21 @@ public class BankManager extends User {
             }
         return  poorUsers;
         }
+
+        public void collectInterestFromLoans(){
+
+        }
+
+    public void addCurrencies(){
+        //Get symbol, name, and exchange rate from manager
+        String symbol="";
+        String name="";
+        double exrate = 0.0;
+
+        Currency add = new Currency();
+        add.setSymbol(symbol);
+        add.setName(name);
+        add.setExchangeRate(exrate);
+        Currencies.get.addCurrency(add);
     }
+}

@@ -25,35 +25,53 @@ public class ReqLoanPanel extends JPanel{
         cons.fill = GridBagConstraints.HORIZONTAL;
         cons.insets = new Insets(10, 10,10,10);
 
-        JLabel label1 =  new JLabel("Req Loan ");
+        JLabel loanAmountLabel = new JLabel("Enter Loan Amount:");
         cons.gridx = 0;
         cons.gridy = 0;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(label1,cons);
+        this.add(loanAmountLabel, cons);
 
-        JButton opUsrAcc = new JButton("My Accounts");
+        // TextField for Loan Amount
+        JTextField loanAmountField = new JTextField(15);
         cons.gridx = 1;
-        cons.gridy = 0;
-        this.add(opUsrAcc,cons);
-        
-        SelAccListener sal = new SelAccListener();
-        opUsrAcc.addActionListener(sal);
+        this.add(loanAmountField, cons);
 
-        JLabel label2 =  new JLabel("Open a New Account ?");
+        // Label for Select Account
+        JLabel accountLabel = new JLabel("Select Account:");
+        cons.gridy = 1;
         cons.gridx = 0;
-        cons.gridy = 1;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(label2,cons);
+        this.add(accountLabel, cons);
 
-        JButton opNewAcc = new JButton("New Account");
+        // ComboBox for Selecting Account
+        JComboBox<String> accountComboBox = new JComboBox<>(new String[]{"Account 1", "Account 2", "Account 3"});
         cons.gridx = 1;
-        cons.gridy = 1;
-        this.add(opNewAcc,cons);
-        
-        NewAccListener nal = new NewAccListener();
-        opNewAcc.addActionListener(nal);
+        this.add(accountComboBox, cons);
 
+        // Label for Collateral
+        JLabel collateralLabel = new JLabel("Collateral:");
+        cons.gridy = 2;
+        cons.gridx = 0;
+        this.add(collateralLabel, cons);
 
+        // TextField for Collateral
+        JTextField collateralField = new JTextField(15);
+        cons.gridx = 1;
+        this.add(collateralField, cons);
+
+        // Submit Button
+        JButton submitButton = new JButton("Submit");
+        cons.gridy = 3;
+        cons.gridx = 0;
+        cons.gridwidth = 2; // Span across two columns
+        cons.fill = GridBagConstraints.CENTER;
+        this.add(submitButton, cons);
+
+    }
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, this.getWidth(), this.getHeight(), this);
+        }
     }
 
 }
