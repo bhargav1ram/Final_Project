@@ -10,7 +10,7 @@ public class TradingAccount extends Account {
     private List<Shares> sharesTotal; // variable to store all the shares
 
     public TradingAccount(String uid, String accId, double zeroOpeningBalance, String accType){
-        super(uid, accId, 0.0, accType);
+        super(uid, accId, zeroOpeningBalance, accType);
         sharesTotal = new ArrayList<>();
         // TODO: update shares info in database???(when is this used?)//On creation of trading account
     }
