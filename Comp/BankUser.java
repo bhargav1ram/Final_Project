@@ -55,7 +55,7 @@ public class BankUser extends User {
                 int randomNumber = 100000 + random.nextInt(900000);
                 String accountId=String.valueOf(randomNumber);
                 openingBalance-=Constants.get.accountOpeningAndClosingFee;
-                BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
+                // BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
                 savingsAccount = new SavingsAccount(userId, accountId,openingBalance ,Constants.get.savingsType);
                 return true;
             }
@@ -79,7 +79,7 @@ public class BankUser extends User {
                 int randomNumber = 100000 + random.nextInt(900000);
                 String accountId=String.valueOf(randomNumber);
                 openingBalance=openingBalance-Constants.get.accountOpeningAndClosingFee;
-                BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
+                // BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
                 checkingsAccount = new CheckingsAccount(userId, accountId,openingBalance ,Constants.get.checkingsType);
                 return true;
             }
@@ -109,7 +109,7 @@ public class BankUser extends User {
                 String accountId=String.valueOf(randomNumber);
                 savingsAccount.balances.get(0).decreaseCash(openingBalance);
                 openingBalance=openingBalance-Constants.get.accountOpeningAndClosingFee;
-                BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
+                // BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
                 tradingAccount = new TradingAccount(userId, accountId,openingBalance ,Constants.get.tradingType);
                 return true;
             }
@@ -149,7 +149,7 @@ public class BankUser extends User {
         double amount = 10;//Add euro amount
         if(amount<checkingsAccount.getWithdrawableBalance(currency)) {
             double transactionFee = amount * (Constants.get.feePercent);
-            BankManager.getBanksavingsAccount().addBalance(currency, transactionFee);
+            // BankManager.getBanksavingsAccount().addBalance(currency, transactionFee);
             checkingsAccount.withdraw(currency, amount);
         }
     }
@@ -221,19 +221,19 @@ public class BankUser extends User {
 
     public void closeSavingsAccount(){
         savingsAccount.decreaseBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
-        BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
+        // BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
         savingsAccount=null;
     }
 
     public void closeCheckingsAccount(){
         checkingsAccount.decreaseBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
-        BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
+        // BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
         checkingsAccount=null;
     }
 
     public void closeTradingAccount(){
         savingsAccount.decreaseBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
-        BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
+        // BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, Constants.get.accountOpeningAndClosingFee);
         tradingAccount=null;
     }
 
@@ -254,7 +254,7 @@ public class BankUser extends User {
         if(value<checkingsAccount.getWithdrawableBalance(Constants.get.usdSymbol)) {
             double transactionFee = value * (Constants.get.feePercent / 100);
             checkingsAccount.decreaseBalance(Constants.get.usdSymbol, value + transactionFee);
-            BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, transactionFee);
+            // BankManager.getBanksavingsAccount().addBalance(Constants.get.usdSymbol, transactionFee);
             Transaction transaction = new Transaction(name, to, value, Clock.get.getTime());
         }
     }

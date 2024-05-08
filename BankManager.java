@@ -5,16 +5,16 @@ import java.util.Random;
 
 public class BankManager extends User {
 
-    protected static SavingsAccount banksavingsAccount = new SavingsAccount("M1", "001",100000000 ,Constants.get.savingsType);
+    // protected static SavingsAccount banksavingsAccount = new SavingsAccount("M1", "001",100000000 ,Constants.get.savingsType);
 
     Random random = new Random();
     public BankManager(String name, String userId, String password, String role) {
         super(name, userId, password, role);
     }
 
-    public static SavingsAccount getBanksavingsAccount(){
-        return banksavingsAccount;
-    }
+    // public static SavingsAccount getBanksavingsAccount(){
+    //     return banksavingsAccount;
+    // }
 
     public void getTodayTransactions(){
         String time =Clock.get.getTime();

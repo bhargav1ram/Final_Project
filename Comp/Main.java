@@ -5,6 +5,7 @@ public class Main {
         // acc.sellShares("APPL", 4);
         // acc.getSharesOfSymbol("APPL").getRealisedProfit();
 
-        BankManager.changeTime("2024-02-01");
+        Stocks.get.updatePrice("APPL", 20);
+        Stocks.get.addStock("POO", "Booeing", 3);
     }
 }

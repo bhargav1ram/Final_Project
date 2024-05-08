@@ -47,7 +47,7 @@ public class Stocks implements AdminObserver {
             pstmt.setString(2, stock.getSymbol());
             pstmt.setDouble(3, stock.getPrice());
 
-            pstmt.executeQuery();
+            pstmt.executeUpdate();
             Thread.sleep(100);
         } catch (Exception e) {
             System.out.println("Database error occurred:");
@@ -81,7 +81,7 @@ public class Stocks implements AdminObserver {
             pstmt.setDouble(1, stock.getPrice());
             pstmt.setString(2, stock.getSymbol());
 
-            pstmt.executeQuery();
+            pstmt.executeUpdate();
             Thread.sleep(100);
         } catch (Exception e) {
             System.out.println("Database error occurred:");
