@@ -28,7 +28,7 @@ public class Account {
         if(accountType!=Constants.get.tradingType) {
             sql = "INSERT INTO BankAccounts (AccountID, UserID, AccountType, USDBalance, INRBalance, EURBalance, DayOpened) VALUES (?, ?, ?, ?, ?, ?, ?);";
         }else{
-            sql = "INSERT INTO TradingAccounts (TradingAccountID, UserID, AccountType, Balance, DayOpened) VALUES (?, ?, ?, ?, ?, ?, ?);";
+            sql = "INSERT INTO TradingAccounts (TradingAccountID, UserID, Balance, DayOpened) VALUES (?, ?, ?, ?);";
         }
 
 
@@ -46,9 +46,8 @@ public class Account {
             }else{
                 pstmt.setString(1, accountId);
                 pstmt.setString(2, userId);
-                pstmt.setString(3, Constants.get.usdSymbol);
-                pstmt.setDouble(4, 0.0);
-                pstmt.setDate(5, java.sql.Date.valueOf(accountOpenTime));
+                pstmt.setDouble(3, 0.0);
+                pstmt.setDate(4, java.sql.Date.valueOf(accountOpenTime));
             }
 
             int affectedRows = pstmt.executeUpdate();
@@ -70,7 +69,12 @@ public class Account {
         transactions = new ArrayList<>();
         // TODO: get transactions and balances data from database(Why have you used this?)//Pull all data members given in class above
 
-        sql = "SELECT * FROM BankAccounts WHERE UserID = ? AND AccountID = ?";
+        if(accountType!=Constants.get.tradingType) {
+            sql = "SELECT * FROM BankAccounts WHERE UserID = ? AND AccountID = ?";
+        }
+        else{
+            sql = "SELECT * FROM TradingAccounts WHERE UserID = ? AND TradingAccountID = ?";
+        }
 
         try (Connection conn = Database.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {

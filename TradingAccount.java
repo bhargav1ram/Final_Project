@@ -19,7 +19,7 @@ public class TradingAccount extends Account {
         super(uid, accId, accType);
         sharesTotal = new ArrayList<>();
         // TODO: populate shares with previous shares from database(when is this used?)//Get info of trading account from db
-        String sql = "SELECT StockSymbol, currentNumOfShares, buyPrices, sellPrices, buyNumOfShares, sellNumOfShares, trades FROM StockHoldings WHERE AccountID = ?";
+        String sql = "SELECT StockSymbol, currentNumOfShares, buyPrices, sellPrices, buyNumOfShares, sellNumOfShares, trades FROM StockHoldings WHERE TradingAccountID = ?";
 
         try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
