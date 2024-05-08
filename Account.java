@@ -254,7 +254,6 @@ public class Account {
     public void deposit(String symbol, double amount){
         if(amount == 0.0) return;
         double fee = amount*Constants.get.feePercent;
-        amount *= (1.0-Constants.get.feePercent);
         addBalance(symbol, amount);
         addToTransactions(new Transaction("deposit", "account", amount*Currencies.get.getCurrency(symbol).getExchangeRate(), Clock.get.getTime()));
         deductFee(symbol, fee);
