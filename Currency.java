@@ -6,6 +6,16 @@ public class Currency {
     private double exchangeRate; // exchangeRate of the currency
     private String name; // name of the currency
 
+    public Currency(){
+        
+    }
+
+    public Currency(String symbol, double exchangeRate, String name) {
+        this.symbol = symbol;
+        this.exchangeRate = exchangeRate;
+        this.name = name;
+    }
+
     public String getSymbol() {
         return symbol;
     }

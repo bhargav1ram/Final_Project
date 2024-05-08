@@ -3,6 +3,7 @@
  * Singleton class
  */
 
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -14,12 +15,35 @@ public class Clock {
 
     private Clock(){
         curtime = Constants.get.defaultTime;
-        // TODO: or bring time from database
+        prevtime = null;
+        // TODO: or bring time from database(Add initial value in db manually. Further updates will be added in DB)
+
+
     }
 
     public void setTime(String time){
+
+
+        if(getIsBefore(prevtime,time)){
+            prevtime = getTime();
+        }
         curtime = time;
-        prevtime = getTime();
+        String query = "SELECT CurrentDate FROM CurrentTime WHERE CurrentDate = (SELECT MAX(CurrentDate) FROM CurrentTime)";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            if (rs.next()) {
+                Date lastDate = rs.getDate("CurrentDate");
+                System.out.println("Last date from CurrentTime table: " + lastDate);
+            } else {
+                System.out.println("No dates found in CurrentTime table.");
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL Exception occurred:");
+            e.printStackTrace();
+        }
     }
 
     public String getTime(){
@@ -56,5 +80,19 @@ public class Clock {
         double years = months/12.0;
 
         return years;
+    }
+
+    public boolean getIsBefore(String Date1, String Date2) {
+        // converting strings to time
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate Date = LocalDate.parse(Date1, formatter);
+        LocalDate secondDate = LocalDate.parse(Date2, formatter);
+
+        if(Date.isBefore(secondDate)){
+            return true;
+        }
+
+        return false;
+
     }
 }

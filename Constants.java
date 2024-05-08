@@ -16,7 +16,7 @@ public class Constants {
 
     public final double interestRate = 2.0; // APR for the loans or interests
     public final double minimumBalanceForInterests = 3000; // savings with balance > 3000 will be paid interest
-    public final double feePercent = 0.5; // percentage of transaction charged as fee
+    public final double feePercent = 0.1; // percentage of transaction charged as fee
 
     public final double minSavingsBalance = 2500; // minimum balance for savings account
 
@@ -30,8 +30,8 @@ public class Constants {
     public final double minTradingAccountOpenBalance = 1000;
 
     // account types
-    public final String savingsType = "savings";
-    public final String checkingsType = "checkings";
+    public final String savingsType = "Savings";
+    public final String checkingsType = "Checkings";
     public final String tradingType = "trading";
 
     public final String bankuser = "Bank User";
