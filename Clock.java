@@ -39,16 +39,11 @@ public class Clock {
         String query = "UPDATE CurrentTime SET CurrentDate = ?";
 
         try (Connection conn = Database.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, time);
-            if (rs.next()) {
-                curtime = rs.getDate("CurrentDate").toString();
-                System.out.println("Last date from CurrentTime table: " + curtime);
-            } else {
-                System.out.println("No dates found in CurrentTime table.");
-            }
+            pstmt.executeUpdate();
             Thread.sleep(100);
+            System.out.println("Time updated to "+curtime);
         } catch (Exception e) {
             System.out.println("SQL Exception occurred:");
             e.printStackTrace();

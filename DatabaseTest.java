@@ -6,7 +6,7 @@ import java.sql.Statement;
 public class DatabaseTest {
     private static final String URL = "jdbc:mysql://localhost:3306/";
     private static final String USER = "root";
-    private static final String PASSWORD = "Learning#.01";
+    private static final String PASSWORD = "rootroot";
 
     public static void main(String[] args) {
         try {
