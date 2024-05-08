@@ -3,6 +3,9 @@
  * Singleton class
  */
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,11 +16,47 @@ public class Stocks implements AdminObserver {
     private Stocks(){
         stocks = new ArrayList<Stock>();
         // TODO: get data from database and update stocks accordingly??(Update how)//View all stocks
+        String sql = "SELECT * FROM Stocks";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                String name = rs.getString("CompanyName");
+                String symbol = rs.getString("StockSymbol");
+                Double price = rs.getDouble("CurrentPrice");
+
+                stocks.add(new Stock(symbol, price, name));
+            }
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
     }
 
     // adds new stock to list
     public void addStock(Stock stock){
         stocks.add(stock);
+
+        String sql = "INSERT INTO Stocks (CompanyName, StockSymbol, CurrentPrice) Values (?, ?, ?)";
+        try (Connection conn = Database.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, stock.getName());
+            pstmt.setString(2, stock.getSymbol());
+            pstmt.setDouble(3, stock.getPrice());
+
+            pstmt.executeQuery();
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
+    }
+
+    public void addStock(String sym, String nm, double pr){
+        addStock(new Stock(sym, pr, nm));
     }
 
     // gets stock with a symbol
@@ -34,6 +73,20 @@ public class Stocks implements AdminObserver {
     public void updatePrice(String symbol, double price){
         Stock stock = getStock(symbol);
         stock.setPrice(price);
+
+        String sql = "UPDATE Stocks SET CurrentPrice = ? WHERE StockSymbol = ?";
+        try (Connection conn = Database.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setDouble(1, stock.getPrice());
+            pstmt.setString(2, stock.getSymbol());
+
+            pstmt.executeQuery();
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
     }
 
     // gets list of all stocks

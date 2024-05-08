@@ -6,6 +6,15 @@ public class Stock {
     private double price; // price of stock
     private String name; // name of the company
 
+    public Stock() {
+    }
+    
+    public Stock(String symbol, double price, String name) {
+        this.symbol = symbol;
+        this.price = price;
+        this.name = name;
+    }
+
     public String getSymbol() {
         return symbol;
     }

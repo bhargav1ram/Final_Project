@@ -4,6 +4,7 @@
  */
 
 import java.util.*;
+import java.sql.*;
 
 public class TradingAccount extends Account {
     private List<Shares> sharesTotal; // variable to store all the shares
@@ -16,7 +17,34 @@ public class TradingAccount extends Account {
 
     public TradingAccount(String uid, String accId, String accType){
         super(uid, accId, accType);
+        sharesTotal = new ArrayList<>();
         // TODO: populate shares with previous shares from database(when is this used?)//Get info of trading account from db
+        String sql = "SELECT LoanID, LoanAmount, InterestRate, LoanDate, Collateral, , Currency FROM Loans WHERE AccountID = ?";
+
+        try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, accountId);  // Set the account ID parameter
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int loanId = rs.getInt("LoanID");
+                    double loanAmount = rs.getDouble("LoanAmount");
+                    double interestRate = rs.getDouble("InterestRate");
+                    String loanDate = String.valueOf(rs.getDate("LoanDate").toLocalDate());
+                    String collateral = rs.getString("Collateral");
+                    String currency = rs.getString("Currency");
+                    double defaults = rs.getDouble("Defaults");
+
+                    loans.add(new Loan(loanAmount, loanDate, defaults, collateral));
+                }
+
+            }
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
     }
 
     // maximum shares one can buy of a symbol due to balance restrictions
