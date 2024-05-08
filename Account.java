@@ -18,7 +18,7 @@ public class Account {
     public Account(String uid, String accId, double openingBalance, String accType){
         minBalance = 0.0;
         transactions = new ArrayList<>();
-        balances = Arrays.asList(new Cash(Constants.get.usdSymbol, openingBalance));
+        balances = Arrays.asList(new Cash(Constants.get.usdSymbol, 0.0));
         accountOpenTime = Clock.get.getTime();
         userId = uid;
         accountId = accId;
