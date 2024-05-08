@@ -25,33 +25,33 @@ public class MoveFundPanel extends JPanel{
         cons.fill = GridBagConstraints.HORIZONTAL;
         cons.insets = new Insets(10, 10,10,10);
 
-        JLabel label1 =  new JLabel("MoveFundPanel ");
+        JLabel label1 =  new JLabel("Total UnRealized Profit ");
         cons.gridx = 0;
         cons.gridy = 0;
         cons.anchor = GridBagConstraints.WEST;
         this.add(label1,cons);
 
-        JButton opUsrAcc = new JButton("My Accounts");
+
+        JLabel label2 =  new JLabel("100");
         cons.gridx = 1;
         cons.gridy = 0;
-        this.add(opUsrAcc,cons);
-        
-        SelAccListener sal = new SelAccListener();
-        opUsrAcc.addActionListener(sal);
-
-        JLabel label2 =  new JLabel("Open a New Account ?");
-        cons.gridx = 0;
-        cons.gridy = 1;
         cons.anchor = GridBagConstraints.WEST;
         this.add(label2,cons);
 
-        JButton opNewAcc = new JButton("New Account");
+
+        JLabel label3 =  new JLabel("Total Realized Profit");
+        cons.gridx = 0;
+        cons.gridy = 1;
+        cons.anchor = GridBagConstraints.WEST;
+        this.add(label3,cons);
+
+        JLabel label4 =  new JLabel("100");
         cons.gridx = 1;
         cons.gridy = 1;
-        this.add(opNewAcc,cons);
-        
-        NewAccListener nal = new NewAccListener();
-        opNewAcc.addActionListener(nal);
+        cons.anchor = GridBagConstraints.WEST;
+        this.add(label4,cons);
+
+       
 
 
     }

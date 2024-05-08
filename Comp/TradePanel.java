@@ -34,7 +34,7 @@ public class TradePanel extends JPanel{
         StockListener sl = new StockListener();
         stock.addActionListener(sl);
 
-        JButton mov =  new JButton("Move Funds");
+        JButton mov =  new JButton("Funds Movement");
         
         cons.gridx = 0;
         cons.gridy = 1;

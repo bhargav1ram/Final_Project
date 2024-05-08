@@ -25,33 +25,45 @@ public class ConversionPanel extends JPanel{
         cons.fill = GridBagConstraints.HORIZONTAL;
         cons.insets = new Insets(10, 10,10,10);
 
-        JLabel label1 =  new JLabel("Conversion");
+        JLabel label1 =  new JLabel("Enter Amount to Convert : ");
         cons.gridx = 0;
         cons.gridy = 0;
         cons.anchor = GridBagConstraints.WEST;
         this.add(label1,cons);
 
-        JButton opUsrAcc = new JButton("My Accounts");
+        JTextField tx1 = new JTextField();
         cons.gridx = 1;
         cons.gridy = 0;
-        this.add(opUsrAcc,cons);
+        this.add(tx1,cons);
         
-        SelAccListener sal = new SelAccListener();
-        opUsrAcc.addActionListener(sal);
-
-        JLabel label2 =  new JLabel("Open a New Account ?");
+        // Label for Select Account
+        JLabel iniCurLabel = new JLabel("Select Initial Currency:");
         cons.gridx = 0;
         cons.gridy = 1;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(label2,cons);
+        this.add(iniCurLabel, cons);
 
-        JButton opNewAcc = new JButton("New Account");
+        // ComboBox for Selecting Account
+        JComboBox<String> iniCur = new JComboBox<>(new String[]{"INR", "USD", "EUR"});
         cons.gridx = 1;
         cons.gridy = 1;
-        this.add(opNewAcc,cons);
-        
-        NewAccListener nal = new NewAccListener();
-        opNewAcc.addActionListener(nal);
+        this.add(iniCur, cons);
+
+        // Label for Select Account
+        JLabel finCurLabel = new JLabel("Select Final Currency:");
+        cons.gridx = 0;
+        cons.gridy = 2;
+        this.add(finCurLabel, cons);
+
+        // ComboBox for Selecting Account
+        JComboBox<String> finCur = new JComboBox<>(new String[]{"INR", "USD", "EUR"});
+        cons.gridx = 1;
+        cons.gridy = 2;
+        this.add(finCur, cons);
+
+        JButton convert = new JButton("Convert");
+        cons.gridx = 0;
+        cons.gridy = 3;
+        this.add(convert, cons);
 
 
     }

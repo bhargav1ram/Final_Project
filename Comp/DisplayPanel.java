@@ -19,41 +19,32 @@ public class DisplayPanel extends JPanel{
             e.printStackTrace();
         }
 
-        this.setLayout(new GridBagLayout());
+        this.setLayout(new BorderLayout());
+
+        String[] accounts = {"Account 1", "Account 2", "Account 3"};
+        JComboBox<String> accountComboBox = new JComboBox<>(accounts);
+        add(accountComboBox, BorderLayout.NORTH); // Add ComboBox at the top
         
-        GridBagConstraints cons = new GridBagConstraints();
-        cons.fill = GridBagConstraints.HORIZONTAL;
-        cons.insets = new Insets(10, 10,10,10);
+        String[] columnNames = {"Transaction ID", "Amount", "Date Taken"};
+        Object[][] data = {}; // Initialize with empty data; will be populated dynamically
 
-        JLabel label1 =  new JLabel("Display ");
-        cons.gridx = 0;
-        cons.gridy = 0;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(label1,cons);
+        JTable transTable = new JTable(data, columnNames);
+        transTable.setPreferredScrollableViewportSize(new Dimension(500, 70));
+        transTable.setFillsViewportHeight(true);
 
-        JButton opUsrAcc = new JButton("My Accounts");
-        cons.gridx = 1;
-        cons.gridy = 0;
-        this.add(opUsrAcc,cons);
-        
-        SelAccListener sal = new SelAccListener();
-        opUsrAcc.addActionListener(sal);
-
-        JLabel label2 =  new JLabel("Open a New Account ?");
-        cons.gridx = 0;
-        cons.gridy = 1;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(label2,cons);
-
-        JButton opNewAcc = new JButton("New Account");
-        cons.gridx = 1;
-        cons.gridy = 1;
-        this.add(opNewAcc,cons);
-        
-        NewAccListener nal = new NewAccListener();
-        opNewAcc.addActionListener(nal);
+        // Put the table into a JScrollPane to handle scrolling
+        JScrollPane scrollPane = new JScrollPane(transTable);
+        add(scrollPane, BorderLayout.CENTER);
 
 
+    }
+    
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
     }
 
 }

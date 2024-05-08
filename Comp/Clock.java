@@ -10,37 +10,46 @@ import java.time.format.DateTimeFormatter;
 
 public class Clock {
     private String curtime; // current time in the format yyyy-mm-dd
-    private String prevtime;
     public final static Clock get = new Clock();
 
     private Clock(){
         curtime = Constants.get.defaultTime;
-        prevtime = null;
         // TODO: or bring time from database(Add initial value in db manually. Further updates will be added in DB)
+        String query = "SELECT CurrentDate FROM CurrentTime";
 
+        try (Connection conn = Database.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                curtime = rs.getDate("CurrentDate").toString();
+                System.out.println("Last date from CurrentTime table: " + curtime);
+            } else {
+                System.out.println("No dates found in CurrentTime table.");
+            }
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("SQL Exception occurred:");
+            e.printStackTrace();
+        }
 
     }
 
     public void setTime(String time){
-
-
-        if(getIsBefore(prevtime,time)){
-            prevtime = getTime();
-        }
         curtime = time;
-        String query = "SELECT CurrentDate FROM CurrentTime WHERE CurrentDate = (SELECT MAX(CurrentDate) FROM CurrentTime)";
+        String query = "UPDATE CurrentTime SET CurrentDate = ?";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
-
+            pstmt.setString(1, time);
             if (rs.next()) {
-                Date lastDate = rs.getDate("CurrentDate");
-                System.out.println("Last date from CurrentTime table: " + lastDate);
+                curtime = rs.getDate("CurrentDate").toString();
+                System.out.println("Last date from CurrentTime table: " + curtime);
             } else {
                 System.out.println("No dates found in CurrentTime table.");
             }
-        } catch (SQLException e) {
+            Thread.sleep(100);
+        } catch (Exception e) {
             System.out.println("SQL Exception occurred:");
             e.printStackTrace();
         }
@@ -48,10 +57,6 @@ public class Clock {
 
     public String getTime(){
         return curtime;
-    }
-
-    public String getPrevTime(){
-        return prevtime;
     }
 
     public int getNumOfMonths(String startTime, String endTime){
@@ -93,6 +98,9 @@ public class Clock {
         }
 
         return false;
+    }
 
+    public boolean canSetTimeTo(String newtime){
+        return getIsBefore(curtime, newtime);
     }
 }

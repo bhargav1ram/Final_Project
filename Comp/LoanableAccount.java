@@ -17,7 +17,7 @@ public class LoanableAccount extends Account implements AdminObserver {
         super(uid, accId, accType);
         loans = new ArrayList<>();
         // TODO: populate loans with previous loans from database??(Meaning is it like a get previous loans?)
-        String sql = "SELECT LoanID, LoanAmount, InterestRate, LoanDate, Collateral, , Currency FROM Loans WHERE AccountID = ?";
+        String sql = "SELECT LoanID, LoanAmount, InterestRate, LoanDate, Collateral, Currency FROM Loans WHERE AccountID = ?";
 
         try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
