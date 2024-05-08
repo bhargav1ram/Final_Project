@@ -36,7 +36,7 @@ public class TradingAccount extends Account {
                     String currency = rs.getString("Currency");
                     double defaults = rs.getDouble("Defaults");
 
-                    loans.add(new Loan(loanAmount, loanDate, defaults, collateral));
+                    // loans.add(new Loan(loanAmount, loanDate, defaults, collateral));
                 }
 
             }
