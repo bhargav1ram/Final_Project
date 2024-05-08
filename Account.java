@@ -77,7 +77,7 @@ public class Account {
 
             pstmt.setString(1, userId);
             pstmt.setString(2, accountId);
-            pstmt.setString(3, accountType);
+
 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {

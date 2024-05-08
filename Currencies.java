@@ -2,20 +2,41 @@
  * class to maintain all curriencies. has database functionality
  */
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Currencies implements AdminObserver {
+public class Currencies {
     private List<Currency> currencies; // list of all currencies
     public static final Currencies get = new Currencies(); // singleton instance
+
 
     private Currencies(){
         currencies = new ArrayList<Currency>();
         // TODO: get data from database and update curriences accordingly???(Used at startup)(Display exchange rate with usd)
+        String sql = "SELECT * FROM BankCurrencies";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                String currencyName = rs.getString("CurrencyName");
+                String currencySymbol = rs.getString("CurrencySymbol");
+                Double exchangeRate = rs.getDouble("ExchangeRate");
+
+            }
+        } catch (SQLException e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
     }
 
     // adds new currency to list
-    private void addCurrency(Currency currency){
+    public void addCurrency(Currency currency){
         currencies.add(currency);
     }
 
@@ -42,10 +63,6 @@ public class Currencies implements AdminObserver {
             currencySymbols.add(currency.getSymbol());
         }
         return currencySymbols;
-    }
-
-    public void getUpdateFromAdmin() {//Whatever updates admin makes
-        // TODO: add if new currencies are added or change the ERs of current currencies??(Exchange rate should be calculated in java. Just values change)
     }
     
 }

@@ -3,6 +3,7 @@
  * trading account. Both checkings and savings are loanable accounts.
  * One can only take loans in USD.
  */
+import java.sql.*;
 import java.util.*;
 
 public class LoanableAccount extends Account implements AdminObserver {
@@ -15,6 +16,33 @@ public class LoanableAccount extends Account implements AdminObserver {
     public LoanableAccount(String uid, String accId, String accType){
         super(uid, accId, accType);
         // TODO: populate loans with previous loans from database??(Meaning is it like a get previous loans?)
+        String sql = "SELECT LoanID, LoanAmount, InterestRate, LoanDate, Collateral, Currency FROM Loans WHERE AccountID = ?";
+
+        try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, accountId);  // Set the account ID parameter
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+
+
+                while (rs.next()) {
+                    int loanId = rs.getInt("LoanID");
+                    double loanAmount = rs.getDouble("LoanAmount");
+                    double interestRate = rs.getDouble("InterestRate");
+                    String loanDate = String.valueOf(rs.getDate("LoanDate").toLocalDate());
+                    String collateral = rs.getString("Collateral");
+                    String currency = rs.getString("Currency");
+
+                    //Print loans from here
+                }
+
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
 
     }
 
@@ -24,6 +52,32 @@ public class LoanableAccount extends Account implements AdminObserver {
     public void takeNewLoan(double amount, String collateral){
         loans.add(new Loan(amount, collateral));
         // TODO: add this loan to the database???(If this is for adding loans then what was 1st one for?)
+        String sql = "INSERT INTO Loans (AccountID, LoanAmount, InterestRate, LoanDate, Collateral, Currency) VALUES (?, ?, ?, ?, ?, ?)";
+
+        // Example interest rate and date
+        double interestRate = Constants.get.interestRate; // Fixed interest rate for the example
+        String loanDate = Clock.get.getTime(); // Current date as loan date
+
+        try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, accountId);
+            pstmt.setDouble(2, amount);
+            pstmt.setDouble(3, interestRate);
+            pstmt.setDate(4, java.sql.Date.valueOf(loanDate));
+            pstmt.setString(5, collateral);
+            pstmt.setString(6, Constants.get.usdSymbol);
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("Loan successfully added to the database.");
+            } else {
+                System.out.println("Failed to add the loan to the database.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
     }
 
     // get loans in string format
