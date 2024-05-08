@@ -25,7 +25,7 @@ public class Account {
         accountType = accType;
         double empty =0.0;
          // TODO: push new account to the database(Done)//Creating the account
-        if(accountType!=Constants.get.tradingType) {
+        if(!accountType.equals(Constants.get.tradingType)) {
             sql = "INSERT INTO BankAccounts (AccountID, UserID, AccountType, USDBalance, INRBalance, EURBalance, DayOpened) VALUES (?, ?, ?, ?, ?, ?, ?);";
         }else{
             sql = "INSERT INTO TradingAccounts (TradingAccountID, UserID, Balance, DayOpened) VALUES (?, ?, ?, ?);";
@@ -35,7 +35,7 @@ public class Account {
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // Set the values received from the method parameters
-            if(accountType!=Constants.get.tradingType) {
+            if(!accountType.equals(Constants.get.tradingType)) {
                 pstmt.setString(1, accountId);
                 pstmt.setString(2, userId);
                 pstmt.setString(3, accountType);
@@ -69,7 +69,7 @@ public class Account {
         transactions = new ArrayList<>();
         // TODO: get transactions and balances data from database(Why have you used this?)//Pull all data members given in class above
 
-        if(accountType!=Constants.get.tradingType) {
+        if(!accountType.equals(Constants.get.tradingType)) {
             sql = "SELECT * FROM BankAccounts WHERE UserID = ? AND AccountID = ?";
         }
         else{
@@ -85,7 +85,7 @@ public class Account {
 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                if(accountType!=Constants.get.tradingType) {
+                if(!accountType.equals(Constants.get.tradingType)) {
                     String accountID = rs.getString("AccountID");
                     String userID = rs.getString("UserID");
                     String accountType = rs.getString("AccountType");

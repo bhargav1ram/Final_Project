@@ -85,7 +85,7 @@ public class TradingAccount extends Account {
     }
 
     private void insertSharesToDb(String symbol){
-        String sql = "INSERT INTO StockHoldings (TradingAccountID, StockSymbol, currentNumOfShares, buyPrices, sellPrices, buyNumOfShares, sellNumOfShares, trades) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO StockHoldings (TradingAccountID, StockSymbol, currentNumOfShares, buyPrices, sellPrices, buyNumOfShares, sellNumOfShares, trades) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -225,7 +225,7 @@ public class TradingAccount extends Account {
     public Shares getSharesOfSymbol(String symbol){
         Shares shares = null;
         for (Shares curshares : sharesTotal) {
-            if (curshares.getStock().getSymbol() == symbol) {
+            if (curshares.getStock().getSymbol().equals(symbol)) {
                 shares = curshares;
             }
         }

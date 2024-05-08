@@ -178,7 +178,7 @@ public class LoanableAccount extends Account implements AdminObserver {
     // get balance that can be withdrawn from ATM at this point
     public double getWithdrawableBalance(String symbol){
         double balance = getBalance(symbol);
-        if (symbol == Constants.get.usdSymbol) {
+        if (symbol.equals(Constants.get.usdSymbol)) {
             balance = balance-minBalance;
             if (balance<0.0) balance = 0.0;
         }
