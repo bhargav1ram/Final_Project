@@ -5,7 +5,6 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,13 +22,15 @@ public class Currencies {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
+            while (rs.next()) {
                 String currencyName = rs.getString("CurrencyName");
                 String currencySymbol = rs.getString("CurrencySymbol");
                 Double exchangeRate = rs.getDouble("ExchangeRate");
 
+                currencies.add(new Currency(currencySymbol, exchangeRate, currencyName));
             }
-        } catch (SQLException e) {
+            Thread.sleep(100);
+        } catch (Exception e) {
             System.out.println("Database error occurred:");
             e.printStackTrace();
         }
@@ -38,6 +39,21 @@ public class Currencies {
     // adds new currency to list
     public void addCurrency(Currency currency){
         currencies.add(currency);
+
+        String sql = "INSERT INTO BankCurrencies (CurrencyName, CurrencySymbol, ExchangeRate) Values (?, ?, ?)";
+        try (Connection conn = Database.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, currency.getName());
+            pstmt.setString(2, currency.getSymbol());
+            pstmt.setDouble(3, currency.getExchangeRate());
+
+            pstmt.executeQuery();
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
     }
 
     // gets currency with a symbol
@@ -47,13 +63,27 @@ public class Currencies {
                 return currency;
             }
         }
-        return new Currency();
+        return null;
     }
 
     // update currency er or exhange rate
-    private void updateExchangeRate(String symbol, double er){
+    public void updateExchangeRate(String symbol, double er){
         Currency currency = getCurrency(symbol);
         currency.setExchangeRate(er);
+
+        String sql = "UPDATE BankCurrencies SET ExchangeRate = ? WHERE CurrencySymbol = ?";
+        try (Connection conn = Database.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setDouble(1, currency.getExchangeRate());
+            pstmt.setString(2, currency.getSymbol());
+
+            pstmt.executeQuery();
+            Thread.sleep(100);
+        } catch (Exception e) {
+            System.out.println("Database error occurred:");
+            e.printStackTrace();
+        }
     }
 
     // gets list of all currencies
@@ -63,6 +93,14 @@ public class Currencies {
             currencySymbols.add(currency.getSymbol());
         }
         return currencySymbols;
+    }
+
+    public void addCurrency(String symbol, String name, double exrate){
+        Currency add = new Currency();
+        add.setSymbol(symbol);
+        add.setName(name);
+        add.setExchangeRate(exrate);
+        Currencies.get.addCurrency(add);
     }
     
 }

@@ -122,4 +122,4 @@ public class BankManager extends User {
         add.setExchangeRate(exrate);
         Currencies.get.addCurrency(add);
     }
-    }
+}
