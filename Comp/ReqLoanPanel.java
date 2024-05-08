@@ -7,11 +7,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 
-public class LoansPanel extends JPanel{
+public class ReqLoanPanel extends JPanel{
 
     private BufferedImage backgroundImage;
 
-    public LoansPanel(){
+    public ReqLoanPanel(){
         // Load the background image
         try {
             backgroundImage = ImageIO.read(new File("C:\\Users\\pbhar\\OneDrive\\Desktop\\Code\\Java-8\\Swing\\pic.jpg"));
@@ -25,32 +25,34 @@ public class LoansPanel extends JPanel{
         cons.fill = GridBagConstraints.HORIZONTAL;
         cons.insets = new Insets(10, 10,10,10);
 
-        JButton prevLoan = new JButton("Previous Loans");
+        JLabel label1 =  new JLabel("Req Loan ");
         cons.gridx = 0;
         cons.gridy = 0;
         cons.anchor = GridBagConstraints.WEST;
-        this.add(prevLoan,cons);
-        PrevLoanListener pll = new PrevLoanListener();
-        prevLoan.addActionListener(pll);
+        this.add(label1,cons);
 
+        JButton opUsrAcc = new JButton("My Accounts");
+        cons.gridx = 1;
+        cons.gridy = 0;
+        this.add(opUsrAcc,cons);
         
-        JButton currLoan = new JButton("Ongoing/Current Loans");
+        SelAccListener sal = new SelAccListener();
+        opUsrAcc.addActionListener(sal);
+
+        JLabel label2 =  new JLabel("Open a New Account ?");
         cons.gridx = 0;
         cons.gridy = 1;
         cons.anchor = GridBagConstraints.WEST;
-        this.add(currLoan,cons);
-        CurrLoanListener cll = new CurrLoanListener();
-        currLoan.addActionListener(cll);
+        this.add(label2,cons);
 
-        JButton reqLoan = new JButton("Request a Loan");
-        cons.gridx = 0;
-        cons.gridy = 2;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(reqLoan,cons);
-        ReqLoanListener rll = new ReqLoanListener();
-        reqLoan.addActionListener(rll);
+        JButton opNewAcc = new JButton("New Account");
+        cons.gridx = 1;
+        cons.gridy = 1;
+        this.add(opNewAcc,cons);
         
-        
+        NewAccListener nal = new NewAccListener();
+        opNewAcc.addActionListener(nal);
+
 
     }
 

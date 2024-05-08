@@ -5,7 +5,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
+import java.sql.Connection;
 
 public class ProfilePanel extends JPanel{
 
@@ -32,7 +32,7 @@ public class ProfilePanel extends JPanel{
         cons.anchor = GridBagConstraints.WEST;
         this.add(nameLabel,cons);
 
-        JLabel name =  new JLabel();
+        JLabel name =  new JLabel(Session.getInstance().getUserName());
         
         cons.gridx = 1;
         cons.gridy = 0;
@@ -42,16 +42,28 @@ public class ProfilePanel extends JPanel{
         JLabel userIDLabel =  new JLabel("UserID");
         
         cons.gridx = 0;
-        cons.gridy = 0;
+        cons.gridy = 1;
         cons.anchor = GridBagConstraints.WEST;
         this.add(userIDLabel,cons);
 
-        JLabel userID =  new JLabel();
-        
+        JLabel userID =  new JLabel(Session.getInstance().getUserId());
         cons.gridx = 1;
-        cons.gridy = 0;
+        cons.gridy = 1;
         cons.anchor = GridBagConstraints.WEST;
         this.add(userID,cons);
+
+        JLabel roleLabel =  new JLabel("Role");
+        
+        cons.gridx = 0;
+        cons.gridy = 2;
+        cons.anchor = GridBagConstraints.WEST;
+        this.add(roleLabel,cons);
+
+        JLabel role =  new JLabel(Session.getInstance().getRole());
+        cons.gridx = 1;
+        cons.gridy = 2;
+        cons.anchor = GridBagConstraints.WEST;
+        this.add(role,cons);
 
         
 

@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 public class UserDefPanel extends JPanel{
 
     private BufferedImage backgroundImage;
+    private static JPanel page;
+    private static JPanel curPanel;
 
     public UserDefPanel(){
         this.setLayout(null);
@@ -40,37 +42,57 @@ public class UserDefPanel extends JPanel{
         cons.gridy = 0;
         cons.anchor = GridBagConstraints.EAST;
         menu.add(prof,cons);
+        ProfileListener pol = new ProfileListener();
+        prof.addActionListener(pol);
        
         MJButton accSum = new MJButton("Account Summary");
         cons.gridx = 1;
         cons.gridy = 0;
         cons.anchor = GridBagConstraints.EAST;
         menu.add(accSum,cons);
-       
-        MJButton loan = new MJButton("Loans");
+        AccSumListener acsl = new AccSumListener();
+        accSum.addActionListener(acsl);
+
+        MJButton accounts = new MJButton("Accounts");
         cons.gridx = 2;
         cons.gridy = 0;
         cons.anchor = GridBagConstraints.EAST;
-        menu.add(loan,cons);
-
-        MJButton tran = new MJButton("Transactions");
+        menu.add(accounts,cons);
+        AccountsListener acl = new AccountsListener();
+        accounts.addActionListener(acl);
+       
+        MJButton loan = new MJButton("Loans");
         cons.gridx = 3;
         cons.gridy = 0;
         cons.anchor = GridBagConstraints.EAST;
-        menu.add(tran,cons);
+        menu.add(loan,cons);
+        LoansListener loal = new LoansListener();
+        loan.addActionListener(loal);
 
-        MJButton offers = new MJButton("Offers");
+        MJButton tran = new MJButton("Transactions");
         cons.gridx = 4;
         cons.gridy = 0;
         cons.anchor = GridBagConstraints.EAST;
-        menu.add(offers,cons);
+        menu.add(tran,cons);
+        TransactionsListener tral = new TransactionsListener();
+        tran.addActionListener(tral);
 
-        MJButton trade = new MJButton("Trade");
-        
+        MJButton offers = new MJButton("Offers");
         cons.gridx = 5;
         cons.gridy = 0;
         cons.anchor = GridBagConstraints.EAST;
+        menu.add(offers,cons);
+        OffersListener offl = new OffersListener();
+        offers.addActionListener(offl);
+
+        MJButton trade = new MJButton("Trade");
+        
+        cons.gridx = 6;
+        cons.gridy = 0;
+        cons.anchor = GridBagConstraints.EAST;
         menu.add(trade,cons);
+        TradeListener trl = new TradeListener();
+        trade.addActionListener(trl);
 
         JButton back= new JButton("Back");
         back.setBounds(10,0,100,35);
@@ -78,19 +100,19 @@ public class UserDefPanel extends JPanel{
         back.addActionListener(backl);
         this.add(back);
 
-        JButton home = new JButton("home");
+        JButton home = new JButton("Home");
         home.setBounds(120,0,100,35);
         HomeListener homel = new HomeListener();
         home.addActionListener(homel);
         this.add(home);
 
-        JButton logout = new JButton("logout");
-        logout.setBounds(1620,0,100,35);
+        JButton logout = new JButton("Logout");
+        logout.setBounds(1780,0,100,35);
         LogoutListener lol = new LogoutListener();
         logout.addActionListener(lol);
         this.add(logout);
         
-        JPanel page = new JPanel();
+        page = new JPanel();
         Border pad = BorderFactory.createEmptyBorder(10,10,10,10);
         Border line = BorderFactory.createLineBorder(Color.BLACK);
 
@@ -99,9 +121,20 @@ public class UserDefPanel extends JPanel{
         page.setBorder(BorderFactory.createCompoundBorder(line,pad));
         this.add(page);
 
-        ProfilePanel profPage = new ProfilePanel();
-        page.add(profPage);
+        curPanel = new ProfilePanel();
+            
+        page.add(curPanel);
        
+    }
+
+    public static void changePanel(JPanel jp){
+        if(page!=null){
+            page.remove(curPanel);
+        }
+        curPanel = jp;
+        page.add(curPanel);
+        page.revalidate();
+        page.repaint();
     }
 
     @Override
@@ -113,110 +146,3 @@ public class UserDefPanel extends JPanel{
     }
 }
 
-
-
-
-/* 
-
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.Border;
-import java.io.File;
-import javax.imageio.ImageIO;
-import java.util.HashMap;
-
-public class UserDefPanel extends JPanel {
-
-    private BufferedImage backgroundImage;
-    private JPanel menu;
-    private JPanel page;
-    private CardLayout cardLayout;
-
-    private HashMap<String, JPanel> panelsMap;
-
-    public UserDefPanel() {
-        this.setLayout(null);
-
-        // Load the background image
-        try {
-            backgroundImage = ImageIO.read(new File("C:\\Users\\pbhar\\OneDrive\\Desktop\\Code\\Java-8\\Swing\\pic.jpg"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Initialize the panels
-        menu = createMenuPanel();
-        page = createPagePanel();
-        cardLayout = new CardLayout();
-        page.setLayout(cardLayout);
-
-        // Add panels to the main panel
-        this.add(menu);
-        this.add(page);
-
-        // Initialize the panels map
-        panelsMap = new HashMap<>();
-        panelsMap.put("Profile", new Profile());
-        // Add more panels to the panels map as needed
-
-        // Add listeners to the menu buttons to switch panels
-        for (Component comp : menu.getComponents()) {
-            if (comp instanceof JButton) {
-                JButton button = (JButton) comp;
-                button.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        String panelName = button.getText();
-                        cardLayout.show(page, panelName);
-                    }
-                });
-            }
-        }
-    }
-
-    // Create the menu panel
-    private JPanel createMenuPanel() {
-        JPanel menu = new JPanel(new GridBagLayout());
-        menu.setSize(1920, 30);
-        menu.setLocation(0, 100);
-
-        GridBagConstraints cons = new GridBagConstraints();
-        cons.fill = GridBagConstraints.HORIZONTAL;
-        cons.insets = new Insets(10, 10, 10, 10);
-
-        JButton prof = new JButton("Profile");
-        menu.add(prof, cons);
-
-        JButton accSum = new JButton("Account Summary");
-        menu.add(accSum, cons);
-
-        JButton loan = new JButton("Loans");
-        menu.add(loan, cons);
-
-        JButton tran = new JButton("Transactions");
-        menu.add(tran, cons);
-
-        return menu;
-    }
-
-    // Create the page panel
-    private JPanel createPagePanel() {
-        JPanel page = new JPanel();
-        Border pad = BorderFactory.createEmptyBorder(10, 10, 10, 10);
-        Border line = BorderFactory.createLineBorder(Color.BLACK);
-        page.setBorder(BorderFactory.createCompoundBorder(line, pad));
-        page.setSize(1550, 800);
-        page.setLocation(200, 200);
-        return page;
-    }
-
-    // Override paintComponent to draw the background image
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (backgroundImage != null) {
-            g.drawImage(backgroundImage, 0, 0, backgroundImage.getWidth(), backgroundImage.getHeight(), this);
-        }
-    }
-}*/

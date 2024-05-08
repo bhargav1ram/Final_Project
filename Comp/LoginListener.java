@@ -24,13 +24,12 @@ class LoginListener implements ActionListener{
         if (checkLogin(user, passwd)) {
             System.out.println("Login successful");
             // Assuming UserDefPanel is a JPanel you switch to upon successful login
-            Project_UI.switchPanel(new UserDefPanel());
-            
+            Session.getInstance().login(user);
+            Project_UI.switchPanel(new UserDefPanel());   
         } else {
             JOptionPane.showMessageDialog(null, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
             System.out.println("Login failed");
         }
-        
     }
 
     private boolean checkLogin(String username, String password) {

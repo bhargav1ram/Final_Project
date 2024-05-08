@@ -1,11 +1,10 @@
 import java.io.File;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
+import javax.swing.table.DefaultTableModel;
 
 public class AccSumPanel extends JPanel{
 
@@ -18,31 +17,32 @@ public class AccSumPanel extends JPanel{
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        this.setLayout(new GridBagLayout());
         
-        GridBagConstraints cons = new GridBagConstraints();
-        cons.fill = GridBagConstraints.HORIZONTAL;
-        cons.insets = new Insets(10, 10,10,10);
-
-        JLabel nameLabel =  new JLabel("Name");
-        
-        cons.gridx = 0;
-        cons.gridy = 0;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(nameLabel,cons);
-
-        JLabel name =  new JLabel("Name");
-        
-        cons.gridx = 1;
-        cons.gridy = 0;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(name,cons);
+        String[] columnNames = {"Account Number", "Account Type", "Balance"};
+        // Dummy data - Replace this with actual data retrieval from database
+        Object[][] data = {
+            {"123456", "Checking", "$3,500"},
+            {"654321", "Savings", "$5,200"}
+        };
 
         
-;
-
         
+        
+
+        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
+        JTable accountTable = new JTable(tableModel);
+
+        JScrollPane scrollPane = new JScrollPane(accountTable);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+
+        // Styling
+        accountTable.setOpaque(false);
+        accountTable.setShowGrid(false);
+        accountTable.setFont(new Font("SansSerif", Font.BOLD, 12));
+        accountTable.setForeground(Color.WHITE);
+        accountTable.setSelectionBackground(new Color(255, 255, 255, 100));
+        this.add(scrollPane, BorderLayout.CENTER);
 
     }
 
