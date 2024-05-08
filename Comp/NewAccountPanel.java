@@ -61,6 +61,8 @@ public class NewAccountPanel extends JPanel {
         cons.gridx = 0;
         cons.gridwidth = 2;
         this.add(submit, cons);
+        NewAccSubmitListener ncsl = new NewAccSubmitListener(currentAccount,savingsAccount,tx2);
+        submit.addActionListener(ncsl);
     }
 
     @Override

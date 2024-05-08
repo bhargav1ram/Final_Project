@@ -1,17 +1,14 @@
 import java.io.File;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.sql.Connection;
 
-public class ProfilePanel extends JPanel{
+public class ProfilePanel extends JPanel {
 
     private BufferedImage backgroundImage;
 
-    public ProfilePanel(){
+    public ProfilePanel() {
         // Load the background image
         try {
             backgroundImage = ImageIO.read(new File("C:\\Users\\pbhar\\OneDrive\\Desktop\\Code\\Java-8\\Swing\\pic.jpg"));
@@ -20,53 +17,62 @@ public class ProfilePanel extends JPanel{
         }
 
         this.setLayout(new GridBagLayout());
-        
         GridBagConstraints cons = new GridBagConstraints();
         cons.fill = GridBagConstraints.HORIZONTAL;
-        cons.insets = new Insets(10, 10,10,10);
+        cons.insets = new Insets(20, 20, 20, 20); // Increased padding
 
-        JLabel nameLabel =  new JLabel("Name");
-        
+        // Welcome label
+        JLabel welcomeLabel = new JLabel("Welcome, " + Session.getInstance().getUserName() + "!");
+        welcomeLabel.setFont(new Font("Serif", Font.BOLD, 24)); // Bigger font size
         cons.gridx = 0;
         cons.gridy = 0;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(nameLabel,cons);
+        cons.gridwidth = 2;
+        cons.anchor = GridBagConstraints.CENTER; // Center alignment
+        this.add(welcomeLabel, cons);
 
-        JLabel name =  new JLabel(Session.getInstance().getUserName());
-        
-        cons.gridx = 1;
-        cons.gridy = 0;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(name,cons);
+        // Resetting gridwidth for other components
+        cons.gridwidth = 1;
+        cons.anchor = GridBagConstraints.WEST; // Left alignment for labels and values
 
-        JLabel userIDLabel =  new JLabel("UserID");
-        
-        cons.gridx = 0;
+        // Name label and value
+        JLabel nameLabel = new JLabel("Name:");
+        nameLabel.setFont(new Font("Serif", Font.PLAIN, 18)); // Slightly smaller font size for labels
         cons.gridy = 1;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(userIDLabel,cons);
-
-        JLabel userID =  new JLabel(Session.getInstance().getUserId());
-        cons.gridx = 1;
-        cons.gridy = 1;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(userID,cons);
-
-        JLabel roleLabel =  new JLabel("Role");
-        
         cons.gridx = 0;
-        cons.gridy = 2;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(roleLabel,cons);
-
-        JLabel role =  new JLabel(Session.getInstance().getRole());
+        this.add(nameLabel, cons);
+        JLabel name = new JLabel(Session.getInstance().getUserName());
+        name.setFont(new Font("Serif", Font.PLAIN, 18));
         cons.gridx = 1;
+        this.add(name, cons);
+
+        // UserID label and value
+        JLabel userIDLabel = new JLabel("UserID:");
+        userIDLabel.setFont(new Font("Serif", Font.PLAIN, 18));
         cons.gridy = 2;
-        cons.anchor = GridBagConstraints.WEST;
-        this.add(role,cons);
+        cons.gridx = 0;
+        this.add(userIDLabel, cons);
+        JLabel userID = new JLabel(Session.getInstance().getUserId());
+        userID.setFont(new Font("Serif", Font.PLAIN, 18));
+        cons.gridx = 1;
+        this.add(userID, cons);
 
-        
-
+        // Role label and value
+        JLabel roleLabel = new JLabel("Role:");
+        roleLabel.setFont(new Font("Serif", Font.PLAIN, 18));
+        cons.gridy = 3;
+        cons.gridx = 0;
+        this.add(roleLabel, cons);
+        JLabel role = new JLabel(Session.getInstance().getRole());
+        role.setFont(new Font("Serif", Font.PLAIN, 18));
+        cons.gridx = 1;
+        this.add(role, cons);
     }
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, this.getWidth(), this.getHeight(), this);
+        }
+    }
 }

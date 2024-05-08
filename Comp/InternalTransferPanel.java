@@ -5,11 +5,17 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 
 
 public class InternalTransferPanel extends JPanel {
     private BufferedImage backgroundImage;
+    JComboBox<String> fromAccountComboBox;
+    JComboBox<String> toAccountComboBox;
 
     public InternalTransferPanel() {
         // Load the background image
@@ -27,6 +33,7 @@ public class InternalTransferPanel extends JPanel {
         // Setup constraints
         cons.anchor = GridBagConstraints.WEST;
 
+
         // Amount input
         JLabel amountLabel = new JLabel("Enter Amount:");
         cons.gridx = 0;
@@ -43,7 +50,7 @@ public class InternalTransferPanel extends JPanel {
         cons.gridx = 0;
         this.add(fromAccountLabel, cons);
 
-        JComboBox<String> fromAccountComboBox = new JComboBox<>(new String[] {"Account 1", "Account 2", "Account 3"});
+        fromAccountComboBox = new JComboBox<>(new String[] {"Account 1", "Account 2", "Account 3"});
         cons.gridx = 1;
         this.add(fromAccountComboBox, cons);
 
@@ -53,7 +60,7 @@ public class InternalTransferPanel extends JPanel {
         cons.gridx = 0;
         this.add(toAccountLabel, cons);
 
-        JComboBox<String> toAccountComboBox = new JComboBox<>(new String[] {"Account 1", "Account 2", "Account 3"});
+        toAccountComboBox = new JComboBox<>(new String[] {"Account 1", "Account 2", "Account 3"});
         cons.gridx = 1;
         this.add(toAccountComboBox, cons);
 
@@ -62,10 +69,32 @@ public class InternalTransferPanel extends JPanel {
         cons.gridy = 3; // Move to the next row
         cons.gridx = 0;
         cons.gridwidth = 2; // Span across two columns
+        TranTransferListener ttl = new TranTransferListener(fromAccountComboBox,toAccountComboBox,amountField);
         this.add(transferButton, cons);
+        loadAccountIds();
+    }
 
-        // Set action listeners as required for functionality
-        // Example: transferButton.addActionListener(e -> performTransfer());
+    private void loadAccountIds() {
+        String query = "SELECT AccountId FROM bankaccounts WHERE UserID = ?"; 
+        
+        
+        try (Connection conn = Database.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, Session.getInstance().getUserId()); // Set the UserID in the PreparedStatement
+            try (ResultSet rs = stmt.executeQuery()) {
+                fromAccountComboBox.removeAllItems(); // Clear existing items
+                toAccountComboBox.removeAllItems();
+                while (rs.next()) {
+                    String accountId = rs.getString("AccountId");
+                    System.out.println(accountId);
+                    fromAccountComboBox.addItem(accountId);
+                    toAccountComboBox.addItem(accountId);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading account IDs: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override

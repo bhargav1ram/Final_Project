@@ -19,7 +19,7 @@ public class TradingAccount extends Account {
         super(uid, accId, accType);
         sharesTotal = new ArrayList<>();
         // TODO: populate shares with previous shares from database(when is this used?)//Get info of trading account from db
-        String sql = "SELECT StockSymbol, currentNumOfShares, buyPrices, sellPrices, buyNumOfShares, sellNumOfShares, trades FROM StockHoldings WHERE AccountID = ?";
+        String sql = "SELECT StockSymbol, currentNumOfShares, buyPrices, sellPrices, buyNumOfShares, sellNumOfShares, trades FROM StockHoldings WHERE TradingAccountID = ?";
 
         try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -30,11 +30,11 @@ public class TradingAccount extends Account {
                 while (rs.next()) {
                     String symbol = rs.getString("StockSymbol");                    
                     double currentNumOfShares = rs.getDouble("currentNumOfShares");
-                    List<Double> buyPrices = Arrays.asList((Double []) rs.getArray("buyPrices").getArray());
-                    List<Double> sellPrices = Arrays.asList((Double []) rs.getArray("sellPrices").getArray());
-                    List<Double> buyNumOfShares = Arrays.asList((Double []) rs.getArray("buyNumOfShares").getArray());
-                    List<Double> sellNumOfShares = Arrays.asList((Double []) rs.getArray("sellNumOfShares").getArray());
-                    List<String> trades = Arrays.asList((String []) rs.getArray("trades").getArray());
+                    List<Double> buyPrices = stringToDoubles(rs.getString("buyPrices"));
+                    List<Double> sellPrices = stringToDoubles(rs.getString("sellPrices"));
+                    List<Double> buyNumOfShares = stringToDoubles(rs.getString("buyNumOfShares"));
+                    List<Double> sellNumOfShares = stringToDoubles(rs.getString("sellNumOfShares"));
+                    List<String> trades = stringToTrades(rs.getString("trades"));
 
                     Shares curShares = new Shares("", symbol);
                     curShares.setCurrentNumOfShares(currentNumOfShares);
@@ -63,11 +63,11 @@ public class TradingAccount extends Account {
 
             Shares curShares = getSharesOfSymbol(symbol);
             pstmt.setDouble(1, curShares.getCurrentNumOfShares());
-            pstmt.setArray(2, conn.createArrayOf("DECIMAL", curShares.getBuyPrices().toArray()));
-            pstmt.setArray(3, conn.createArrayOf("DECIMAL", curShares.getSellPrices().toArray()));
-            pstmt.setArray(4, conn.createArrayOf("DECIMAL", curShares.getBuyNumOfShares().toArray()));
-            pstmt.setArray(5, conn.createArrayOf("DECIMAL", curShares.getSellNumOfShares().toArray()));
-            pstmt.setArray(6, conn.createArrayOf("VARCHAR", curShares.getTrades().toArray()));
+            pstmt.setString(2, listToString(curShares.getBuyPrices()));
+            pstmt.setString(3, listToString(curShares.getSellPrices()));
+            pstmt.setString(4, listToString(curShares.getBuyNumOfShares()));
+            pstmt.setString(5, listToString(curShares.getSellNumOfShares()));
+            pstmt.setString(6, listToString(curShares.getTrades()));
             pstmt.setString(7, accountId);
             pstmt.setString(8, symbol);
 
@@ -85,7 +85,7 @@ public class TradingAccount extends Account {
     }
 
     private void insertSharesToDb(String symbol){
-        String sql = "INSERT INTO StockHoldings (TradingAccountID, StockSymbol, currentNumOfShares, buyPrices, sellPrices, buyNumOfShares, sellNumOfShares, trades) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO StockHoldings (TradingAccountID, StockSymbol, currentNumOfShares, buyPrices, sellPrices, buyNumOfShares, sellNumOfShares, trades) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -95,11 +95,11 @@ public class TradingAccount extends Account {
             pstmt.setString(1, accountId);
             pstmt.setString(2, symbol);
             pstmt.setDouble(3, curShares.getCurrentNumOfShares());
-            pstmt.setArray(4, conn.createArrayOf("DECIMAL", curShares.getBuyPrices().toArray()));
-            pstmt.setArray(5, conn.createArrayOf("DECIMAL", curShares.getSellPrices().toArray()));
-            pstmt.setArray(6, conn.createArrayOf("DECIMAL", curShares.getBuyNumOfShares().toArray()));
-            pstmt.setArray(7, conn.createArrayOf("DECIMAL", curShares.getSellNumOfShares().toArray()));
-            pstmt.setArray(8, conn.createArrayOf("VARCHAR", curShares.getTrades().toArray()));
+            pstmt.setString(4, listToString(curShares.getBuyPrices()));
+            pstmt.setString(5, listToString(curShares.getSellPrices()));
+            pstmt.setString(6, listToString(curShares.getBuyNumOfShares()));
+            pstmt.setString(7, listToString(curShares.getSellNumOfShares()));
+            pstmt.setString(8, listToString(curShares.getTrades()));
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
@@ -112,6 +112,37 @@ public class TradingAccount extends Account {
             System.out.println("Database error occurred:");
             e.printStackTrace();
         }
+    }
+
+    private String listToString(List<?> objs){
+        if (objs.size() == 0) {
+            return "";
+        }
+        String retval = "";
+        List<String> newlist = new ArrayList<>();
+        for (Object obj : objs) {
+            newlist.add(obj.toString());
+        }
+        retval = String.join(";", newlist);
+        return retval;
+    }
+
+    private List<Double> stringToDoubles(String str){
+        List<String> strs = stringToTrades(str);
+        List<Double> retval = new ArrayList<>();
+        for (String strdouble : strs) {
+            try{
+                retval.add(Double.parseDouble(strdouble));
+            }catch(Exception e){}
+        }
+        return retval;
+    }
+
+    private List<String> stringToTrades(String str){
+        if (str.equals("")) {
+            return new ArrayList<String>();
+        }
+        return Arrays.asList(str.split(";"));
     }
 
     // maximum shares one can buy of a symbol due to balance restrictions
@@ -194,7 +225,7 @@ public class TradingAccount extends Account {
     public Shares getSharesOfSymbol(String symbol){
         Shares shares = null;
         for (Shares curshares : sharesTotal) {
-            if (curshares.getStock().getSymbol() == symbol) {
+            if (curshares.getStock().getSymbol().equals(symbol)) {
                 shares = curshares;
             }
         }

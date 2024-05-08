@@ -18,37 +18,36 @@ public class Account {
     public Account(String uid, String accId, double openingBalance, String accType){
         minBalance = 0.0;
         transactions = new ArrayList<>();
-        balances = Arrays.asList(new Cash(Constants.get.usdSymbol, openingBalance));
+        balances = Arrays.asList(new Cash(Constants.get.usdSymbol, 0.0));
         accountOpenTime = Clock.get.getTime();
         userId = uid;
         accountId = accId;
         accountType = accType;
         double empty =0.0;
          // TODO: push new account to the database(Done)//Creating the account
-        if(accountType!=Constants.get.tradingType) {
-            sql = "INSERT INTO BankAccounts (AccountID, UserID, AccountType, USDBalance, Balance, EURBalance, DayOpened) VALUES (?, ?, ?, ?, ?, ?, ?);";
+        if(!accountType.equals(Constants.get.tradingType)) {
+            sql = "INSERT INTO BankAccounts (AccountID, UserID, AccountType, USDBalance, INRBalance, EURBalance, DayOpened) VALUES (?, ?, ?, ?, ?, ?, ?);";
         }else{
-            sql = "INSERT INTO TradingAccounts (TradingAccountID, UserID, AccountType, Balance, DayOpened) VALUES (?, ?, ?, ?, ?, ?, ?);";
+            sql = "INSERT INTO TradingAccounts (TradingAccountID, UserID, Balance, DayOpened) VALUES (?, ?, ?, ?);";
         }
 
 
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             // Set the values received from the method parameters
-            if(accountType!=Constants.get.tradingType) {
+            if(!accountType.equals(Constants.get.tradingType)) {
                 pstmt.setString(1, accountId);
                 pstmt.setString(2, userId);
                 pstmt.setString(3, accountType);
-                pstmt.setDouble(4, openingBalance);
+                pstmt.setDouble(4, 0.0);
                 pstmt.setDouble(5, empty);
                 pstmt.setDouble(6, empty);
                 pstmt.setDate(7, java.sql.Date.valueOf(accountOpenTime));
             }else{
                 pstmt.setString(1, accountId);
                 pstmt.setString(2, userId);
-                pstmt.setString(3, Constants.get.usdSymbol);
-                pstmt.setDouble(4, openingBalance);
-                pstmt.setDate(5, java.sql.Date.valueOf(accountOpenTime));
+                pstmt.setDouble(3, 0.0);
+                pstmt.setDate(4, java.sql.Date.valueOf(accountOpenTime));
             }
 
             int affectedRows = pstmt.executeUpdate();
@@ -70,7 +69,12 @@ public class Account {
         transactions = new ArrayList<>();
         // TODO: get transactions and balances data from database(Why have you used this?)//Pull all data members given in class above
 
-        sql = "SELECT * FROM BankAccounts WHERE UserID = ? AND AccountID = ?";
+        if(!accountType.equals(Constants.get.tradingType)) {
+            sql = "SELECT * FROM BankAccounts WHERE UserID = ? AND AccountID = ?";
+        }
+        else{
+            sql = "SELECT * FROM TradingAccounts WHERE UserID = ? AND TradingAccountID = ?";
+        }
 
         try (Connection conn = Database.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -81,7 +85,7 @@ public class Account {
 
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                if(accountType!=Constants.get.tradingType) {
+                if(!accountType.equals(Constants.get.tradingType)) {
                     String accountID = rs.getString("AccountID");
                     String userID = rs.getString("UserID");
                     String accountType = rs.getString("AccountType");
@@ -253,10 +257,10 @@ public class Account {
     // deposit from atm
     public void deposit(String symbol, double amount){
         if(amount == 0.0) return;
-        deductFee(symbol, amount*Constants.get.feePercent);
-        amount *= (1.0-Constants.get.feePercent);
+        double fee = amount*Constants.get.feePercent;
         addBalance(symbol, amount);
         addToTransactions(new Transaction("deposit", "account", amount*Currencies.get.getCurrency(symbol).getExchangeRate(), Clock.get.getTime()));
+        deductFee(symbol, fee);
     }
 
     // function to deduct fees

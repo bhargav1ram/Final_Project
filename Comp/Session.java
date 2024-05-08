@@ -8,6 +8,9 @@ public class Session {
     private String userName;
     private String userId;
     private String role;
+    private String checkAccId;
+    private String savingsAccId;
+    private String tradeAccId;
 
     // Private constructor for singleton pattern
     private Session() {
@@ -52,6 +55,11 @@ public class Session {
 
     public String getRole() {
         return role;
+    }
+
+    public String getAccType(String accId){
+        String prefix = userId + "-";
+        return accId.substring(prefix.length());
     }
 
     // Fetch user details from the database

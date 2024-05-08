@@ -53,7 +53,7 @@ public class LoanableAccount extends Account implements AdminObserver {
         loans.add(new Loan(amount, collateral));
         int loanInAccount = loans.size()-1;
         // TODO: add this loan to the database???(If this is for adding loans then what was 1st one for?)
-        String sql = "INSERT INTO Loans (AccountID, LoanAmount, InterestRate, LoanDate, Collateral, Currency, Defaults, LoanInAccount) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Loans (AccountID, LoanAmount, InterestRate, LoanDate, Collateral, Currency, Defaults, LoanInAccount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Example interest rate and date
         double interestRate = Constants.get.interestRate; // Fixed interest rate for the example
@@ -178,7 +178,7 @@ public class LoanableAccount extends Account implements AdminObserver {
     // get balance that can be withdrawn from ATM at this point
     public double getWithdrawableBalance(String symbol){
         double balance = getBalance(symbol);
-        if (symbol == Constants.get.usdSymbol) {
+        if (symbol.equals(Constants.get.usdSymbol)) {
             balance = balance-minBalance;
             if (balance<0.0) balance = 0.0;
         }

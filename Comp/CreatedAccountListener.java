@@ -38,6 +38,7 @@ class CreatedAccountListener implements ActionListener {
         BankUser bu = new BankUser(name, userId, password, role);
         // Assuming createNew is a static method in BankUser class that returns a boolean
         boolean result = bu.createNew();
+        
         if (result) {
             JOptionPane.showMessageDialog(null, "Account created successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
             // Possibly clear fields or switch panels

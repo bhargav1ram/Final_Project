@@ -5,11 +5,15 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class ReqLoanPanel extends JPanel{
 
     private BufferedImage backgroundImage;
+    JComboBox<String> accountComboBox;
 
     public ReqLoanPanel(){
         // Load the background image
@@ -42,8 +46,9 @@ public class ReqLoanPanel extends JPanel{
         this.add(accountLabel, cons);
 
         // ComboBox for Selecting Account
-        JComboBox<String> accountComboBox = new JComboBox<>(new String[]{"Account 1", "Account 2", "Account 3"});
+        accountComboBox = new JComboBox<>();
         cons.gridx = 1;
+        
         this.add(accountComboBox, cons);
 
         // Label for Collateral
@@ -63,9 +68,35 @@ public class ReqLoanPanel extends JPanel{
         cons.gridx = 0;
         cons.gridwidth = 2; // Span across two columns
         cons.fill = GridBagConstraints.CENTER;
+        SubLoanListener rll = new SubLoanListener(loanAmountField, accountComboBox, collateralField);
+        submitButton.addActionListener(rll);
         this.add(submitButton, cons);
 
+        loadAccountIds();
+
     }
+
+    private void loadAccountIds() {
+        String query = "SELECT AccountId FROM bankaccounts WHERE UserID = ?"; 
+        
+        
+        try (Connection conn = Database.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, Session.getInstance().getUserId()); // Set the UserID in the PreparedStatement
+            try (ResultSet rs = stmt.executeQuery()) {
+                accountComboBox.removeAllItems(); // Clear existing items
+                while (rs.next()) {
+                    String accountId = rs.getString("AccountId");
+                    System.out.println(accountId);
+                    accountComboBox.addItem(accountId);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading account IDs: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
