@@ -48,7 +48,7 @@ public class Currencies {
             pstmt.setString(2, currency.getSymbol());
             pstmt.setDouble(3, currency.getExchangeRate());
 
-            pstmt.executeQuery();
+            pstmt.executeUpdate();
             Thread.sleep(100);
         } catch (Exception e) {
             System.out.println("Database error occurred:");
@@ -78,7 +78,7 @@ public class Currencies {
             pstmt.setDouble(1, currency.getExchangeRate());
             pstmt.setString(2, currency.getSymbol());
 
-            pstmt.executeQuery();
+            pstmt.executeUpdate();
             Thread.sleep(100);
         } catch (Exception e) {
             System.out.println("Database error occurred:");
