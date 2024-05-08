@@ -52,7 +52,7 @@ public class BankManager extends User {
 
     }
 
-    public static void payInterest(){//Not complete
+    public static void payInterest(){
         String sql = "SELECT AccountId, UserID, AccountType FROM BankAccounts";
 
         try (Connection conn = Database.getConnection(); // Using the provided Database class for connection
