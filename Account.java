@@ -15,8 +15,6 @@ public class Account {
 
     protected String sql;
 
-
-
     public Account(String uid, String accId, double openingBalance, String accType){
         minBalance = 0.0;
         transactions = new ArrayList<>();
@@ -68,12 +66,14 @@ public class Account {
         userId = uid;
         accountId = accId;
         accountType = accType;
+        balances = Arrays.asList(new Cash(Constants.get.usdSymbol, 0.0));
+        transactions = new ArrayList<>();
         // TODO: get transactions and balances data from database(Why have you used this?)//Pull all data members given in class above
 
-            sql = "SELECT * FROM BankAccounts WHERE UserID = ? AND AccountID = ?";
+        sql = "SELECT * FROM BankAccounts WHERE UserID = ? AND AccountID = ?";
 
         try (Connection conn = Database.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, userId);
             pstmt.setString(2, accountId);
@@ -88,19 +88,36 @@ public class Account {
                     Double usdBalance = rs.getDouble("USDBalance");
                     Double inrBalance = rs.getDouble("INRBalance");
                     Double eurBalance = rs.getDouble("EURBalance");
-                    String dayBought = String.valueOf(rs.getDate("DayBought").toLocalDate());
+                    balances = Arrays.asList(new Cash(Constants.get.usdSymbol, usdBalance),
+                                            new Cash(Constants.get.euroSymbol, eurBalance),
+                                            new Cash(Constants.get.rupSymbol, inrBalance));
+                    accountOpenTime = String.valueOf(rs.getDate("DayOpened").toLocalDate());
                 }else{
                     String accountID = rs.getString("TradingAccountID");
                     String userID = rs.getString("UserID");
                     String symbol = rs.getString("Currency");
                     Double Balance = rs.getDouble("Balance");
-                    String dayBought = String.valueOf(rs.getDate("DayBought").toLocalDate());
+                    balances = Arrays.asList(new Cash(Constants.get.usdSymbol, Balance));
+                    accountOpenTime = String.valueOf(rs.getDate("DayOpened").toLocalDate());
                 }
+                Thread.sleep(100);
+                sql = "SELECT * FROM Transactions WHERE AccountID = ?";
+                PreparedStatement pstmt2 = conn.prepareStatement(sql);
+                pstmt2.setString(1, accountId);
+                ResultSet rs2 = pstmt2.executeQuery();
+                while (rs2.next()) {
+                    transactions.add(new Transaction(rs2.getString("FROM_"), 
+                                                    rs2.getString("TO_"), 
+                                                    rs2.getDouble("Amount"), 
+                                                    String.valueOf(rs2.getDate("TransactionDate").toLocalDate())));
+                }
+                transactions.sort(Comparator.comparing(Transaction::getTime));
+                Thread.sleep(100);
                 System.out.println("Data loaded successfully for Account ID: " + accountId);
             } else {
                 System.out.println("No account found with the specified details.");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println("Database error occurred:");
             e.printStackTrace();
         }
