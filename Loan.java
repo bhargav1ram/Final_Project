@@ -14,6 +14,13 @@ public class Loan {
         collateral = col;
     }
 
+    public Loan(double amt, String st, double defaults, String col){
+        amount = amt;
+        startTime = st;
+        defaultedPayments = defaults;
+        collateral = col;
+    }
+
     public double getAmount() {
         return amount;
     }

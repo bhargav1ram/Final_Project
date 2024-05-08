@@ -140,7 +140,7 @@ public class Account {
         String balanceColumn = symbol.concat("Balance");
         sql = "UPDATE BankAccounts SET " + balanceColumn + " = " + balanceColumn + " + ? WHERE UserID = ? AND AccountID = ?";
         try (Connection conn = Database.getConnection(); // Assuming Database.getConnection() is implemented elsewhere
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setDouble(1, amount);
             pstmt.setString(2, userId);
@@ -243,8 +243,8 @@ public class Account {
             pstmt.setDate(5, java.sql.Date.valueOf(transaction.getTime())); // Converting LocalDate to java.sql.Date
 
             int affectedRows = pstmt.executeUpdate();
-
-        } catch (SQLException e) {
+            Thread.sleep(100);
+        } catch (Exception e) {
             e.printStackTrace();
 
         }
